@@ -1,16 +1,22 @@
-# todos_mobile
+# Todos Mobile
 
-A new Flutter project.
+> Todo application written in Dart with Flutter.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+<p align="center">
+  <img alt="MainScreen.png" src="https://github.com/z33p/todos_mobile/blob/master/.layouts/MainScreen.png" width="411" height="731">
+</p>
 
-A few resources to get you started if this is your first Flutter project:
+## Todo Model:
+| Attribute    |  Type  |  
+|--------------|--------|
+|    Title     | STRING |
+|  Description |  TEXT  |
+|    isDone    |  BOOL  |
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p align="center">
+  <img alt="TodoFormScreem.png" src="https://github.com/z33p/todos_mobile/blob/master/.layouts/TodoFormScreem.png" width="411" height="731">
+</p>
+
+**Author: z33p**
