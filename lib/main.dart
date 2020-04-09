@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
         ),
         home: StoreConnector<AppState, List<Todo>>(
           converter: (store) => store.state.todos,
-          builder: (context, todos) => MainScreen(todos, title: "Hello world", ),
+          builder: (context, todos) => MainScreen(
+            todos,
+            title: "Todo App",
+          ),
         ),
       ),
     );
