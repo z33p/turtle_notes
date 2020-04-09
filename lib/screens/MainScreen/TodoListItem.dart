@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/screens/TodoFormScreen/TodoFormScreen.dart';
@@ -37,13 +36,8 @@ class _TodoListItemState extends State<TodoListItem> {
 
   void showSnackBar(context) {
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: StoreConnector<AppState, VoidCallback>(
-        converter: (store) => () {
-          store.dispatch(deleteTodoAction(widget.todo.id));
-        },
-        builder: (context, removeTodo) => DeleteTodoOnDeactivate(
-            '"${widget.todo.title}" deletado.', setRemoved),
-      ),
+      content: DeleteTodoOnDeactivate(
+          '"${widget.todo.title}" deletado.', setRemoved),
       action: SnackBarAction(
         label: "DESFAZER",
         onPressed: () => setState(() => isBeingRemoved = false),
