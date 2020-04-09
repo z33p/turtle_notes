@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/models/Todo.dart';
-
-import '../../store.dart';
+import 'package:todos_mobile/screens/TodoFormScreen/FormActionButton.dart';
 import 'TodoForm.dart';
 
 class TodoFormScreen extends StatefulWidget {
@@ -46,49 +44,12 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     });
   }
 
-  Future<bool> createOrEditTodo() async {
-    Todo todo = Todo(
-        title: titleController.text,
-        description: descriptionController.text,
-        isDone: isDoneController);
-
-    if (widget.isUpdatingTodo) {
-      todo.id = this.todo.id;
-      bool successful = await updateTodoRequest(todo);
-      if (successful) store.dispatch(updateTodoAction(todo));
-
-      return successful;
-    }
-
-    Todo created = await createTodoRequest(todo);
-    if (created != null) store.dispatch(createTodoAction(created));
-
-    // if created != null returns a successful request
-    return created != null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
-        onPressed: () async {
-          if (_formKey.currentState.validate()) {
-            bool successful = await createOrEditTodo();
-            if (successful)
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text(widget.isUpdatingTodo
-                      ? "Todo editado!"
-                      : "Todo criado!")));
-
-            await Future.delayed(
-              Duration(seconds: 1),
-              () => Navigator.pop(context),
-            );
-          }
-        },
-      ),
+      floatingActionButton: FormActionButton(_formKey, todo, titleController,
+          descriptionController, isDoneController, widget.isUpdatingTodo),
       body: SingleChildScrollView(
         child: TodoForm(_formKey, titleController, descriptionController,
             isDoneController, setIsDone),
