@@ -1,6 +1,6 @@
 # Todos Mobile
 
-> Todo application written in Dart with Flutter.
+> Todo application written in Dart with Flutter and Redux.
 
 
 <p align="center">
