@@ -3,6 +3,7 @@ import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/models/Todo.dart';
 
 import '../../store.dart';
+import 'FormScreenActionButton.dart';
 import 'TodoForm.dart';
 
 class TodoFormScreen extends StatefulWidget {
@@ -71,24 +72,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
-        onPressed: () async {
-          if (_formKey.currentState.validate()) {
-            bool successful = await createOrEditTodo();
-            if (successful)
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text(widget.isUpdatingTodo
-                      ? "Todo editado!"
-                      : "Todo criado!")));
-
-            await Future.delayed(
-              Duration(seconds: 1),
-              () => Navigator.pop(context),
-            );
-          }
-        },
-      ),
+      floatingActionButton: FormScreenActionButton(_formKey, createOrEditTodo,
+          widget.isUpdatingTodo, () => Navigator.pop(context)),
       body: SingleChildScrollView(
         child: TodoForm(_formKey, titleController, descriptionController,
             isDoneController, setIsDone),
