@@ -1,22 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:todos_mobile/actions/todos_actions.dart';
+import 'package:todos_mobile/helpers/TodosProvider.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/screens/TodoFormScreen/TodoFormScreen.dart';
 
+import '../../store.dart';
+
 class TodoListItem extends StatefulWidget {
-  final BuildContext context;
   final Todo todo;
 
-  TodoListItem(this.context, this.todo);
+  TodoListItem(this.todo);
 
   @override
   _TodoListItemState createState() => _TodoListItemState();
 }
 
 class _TodoListItemState extends State<TodoListItem> {
-  final db = Firestore.instance.collection("todos");
-
   bool isBeingRemoved = false;
   bool removed = false;
 
@@ -35,14 +35,6 @@ class _TodoListItemState extends State<TodoListItem> {
     );
   }
 
-  void patchTodo(String id, dynamic todo) async {
-    await db.document(id).updateData(todo);
-  }
-
-  void deleteTodo(String id) async {
-    await db.document(id).delete();
-  }
-
   void showSnackBar(context) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: DeleteTodoOnDeactivate(
@@ -58,7 +50,7 @@ class _TodoListItemState extends State<TodoListItem> {
   Widget build(BuildContext context) {
     if (isBeingRemoved) {
       // If removed make a delete request
-      if (removed) deleteTodo(widget.todo.id);
+      if (removed) store.dispatch(deleteTodoAction(widget.todo.id));
       // If not removed it should show because is beign removed
       return SizedBox.shrink();
     }
@@ -76,9 +68,10 @@ class _TodoListItemState extends State<TodoListItem> {
       child: Card(
         child: ListTile(
           leading: Checkbox(
-              value: widget.todo.isDone,
-              onChanged: (value) =>
-                  patchTodo(widget.todo.id, {"isDone": value})),
+            value: widget.todo.isDone,
+            onChanged: (value) => store.dispatch(patchTodoAction(
+                {columnId: widget.todo.id, columnIsDone: value ? 1 : 0})),
+          ),
           title: Text(
             widget.todo.title.length < 20
                 ? widget.todo.title
@@ -90,9 +83,11 @@ class _TodoListItemState extends State<TodoListItem> {
                     : TextDecoration.none),
           ),
           subtitle: Text(
-            widget.todo.description.length < 50
-                ? widget.todo.description
-                : widget.todo.description.substring(0, 50) + "...",
+            widget.todo.description == null
+                ? ""
+                : widget.todo.description.length < 50
+                    ? widget.todo.description
+                    : widget.todo.description.substring(0, 50) + "...",
             style: TextStyle(
                 decoration: widget.todo.isDone
                     ? TextDecoration.lineThrough
@@ -101,6 +96,8 @@ class _TodoListItemState extends State<TodoListItem> {
           trailing: IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
+              // It ends the current Snackbar (if there's one) avoiding memory leak warning
+              Scaffold.of(context).hideCurrentSnackBar();
               Navigator.push(
                 context,
                 MaterialPageRoute(

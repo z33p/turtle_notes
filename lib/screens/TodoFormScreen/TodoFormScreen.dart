@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:todos_mobile/actions/todos_actions.dart';
+import 'package:todos_mobile/helpers/TodosProvider.dart';
 import 'package:todos_mobile/models/Todo.dart';
-import 'package:todos_mobile/screens/TodoFormScreen/FormActionButton.dart';
+
+import '../../store.dart';
+import 'FormScreenActionButton.dart';
 import 'TodoForm.dart';
 
 class TodoFormScreen extends StatefulWidget {
@@ -44,12 +48,27 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     });
   }
 
+  Future<void> createOrEditTodo() async {
+    Todo todo = Todo(
+        title: titleController.text,
+        description: descriptionController.text,
+        isDone: isDoneController);
+
+    if (widget.isUpdatingTodo) {
+      todo.id = this.todo.id;
+      store.dispatch(updateTodoAction(todo));
+    } else {
+      Todo created = await TodosProvider.db.insert(todo);
+      store.dispatch(createTodoAction(created));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      floatingActionButton: FormActionButton(_formKey, todo, titleController,
-          descriptionController, isDoneController, widget.isUpdatingTodo),
+      floatingActionButton: FormScreenActionButton(_formKey, createOrEditTodo,
+          widget.isUpdatingTodo, () => Navigator.pop(context)),
       body: SingleChildScrollView(
         child: TodoForm(_formKey, titleController, descriptionController,
             isDoneController, setIsDone),

@@ -1,27 +1,44 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:todos_mobile/helpers/TodosProvider.dart';
 
 class Todo {
-  String id;
+  int id;
   String title;
   String description;
   bool isDone;
 
-  Todo({this.id, this.title, this.description, this.isDone});
+  String createdAt;
+  String updatedAt;
 
-  factory Todo.fromDocSnapshot(DocumentSnapshot doc) {
+  Todo(
+      {this.id,
+      this.title,
+      this.description,
+      this.isDone = false,
+      this.createdAt,
+      this.updatedAt});
+
+  factory Todo.fromMap(Map<String, dynamic> map) {
     return Todo(
-      id: doc.documentID,
-      title: doc['title'],
-      description: doc['description'],
-      isDone: doc['isDone'],
+      id: map['id'],
+      title: map[columnTitle],
+      description: map[columnDescription],
+      isDone: map[columnIsDone] == 1,
+      createdAt: map[columnCreatedAt],
+      updatedAt: map[columnUpdatedAt],
     );
   }
 
-  dynamic toDoc() {
-    return {
-      "title": this.title,
-      "description": this.description,
-      "isDone": this.isDone
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      columnTitle: this.title,
+      columnDescription: this.description,
+      columnIsDone: this.isDone ? 1 : 0,
+      columnCreatedAt: this.createdAt,
+      columnUpdatedAt: this.updatedAt,
     };
+
+    if (this.id != null) map[columnId] = id;
+
+    return map;
   }
 }
