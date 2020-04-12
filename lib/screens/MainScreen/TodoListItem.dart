@@ -21,9 +21,7 @@ class _TodoListItemState extends State<TodoListItem> {
   bool removed = false;
 
   void setRemoved(bool value) {
-    setState(() {
-      removed = value;
-    });
+    setState(() => removed = value);
   }
 
   Widget dismissibleBackground() {
@@ -35,11 +33,16 @@ class _TodoListItemState extends State<TodoListItem> {
     );
   }
 
-  void patchTodo(String id, dynamic todo) async {
+  void patchTodo(String id, Map<String, dynamic> todo) async {
+    todo[columnUpdatedAt] = Timestamp.fromDate(DateTime.now());
     await db.document(id).updateData(todo);
   }
 
   void deleteTodo(String id) async {
+    setState(() {
+      isBeingRemoved = false;
+      removed = false;
+    });
     await db.document(id).delete();
   }
 
@@ -62,9 +65,6 @@ class _TodoListItemState extends State<TodoListItem> {
       // If not removed it should show because is beign removed
       return SizedBox.shrink();
     }
-    // If is not beign removed and removed variable is set to true it means user undo remove item
-    // Therefore set removed to false to avoid bugs
-    else if (removed) setRemoved(false);
 
     return Dismissible(
       key: Key(widget.todo.id.toString()),
@@ -78,7 +78,7 @@ class _TodoListItemState extends State<TodoListItem> {
           leading: Checkbox(
               value: widget.todo.isDone,
               onChanged: (value) =>
-                  patchTodo(widget.todo.id, {"isDone": value})),
+                  patchTodo(widget.todo.id, {columnIsDone: value})),
           title: Text(
             widget.todo.title.length < 20
                 ? widget.todo.title
@@ -101,6 +101,8 @@ class _TodoListItemState extends State<TodoListItem> {
           trailing: IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
+              // It ends the current Snackbar (if there's one) avoiding memory leak warning
+              Scaffold.of(context).hideCurrentSnackBar();
               Navigator.push(
                 context,
                 MaterialPageRoute(

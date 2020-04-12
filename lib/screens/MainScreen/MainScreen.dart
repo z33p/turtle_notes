@@ -33,7 +33,6 @@ class MainScreen extends StatelessWidget {
             if (!snapshot.hasData) return const Text("Loading...");
 
             return ListView.builder(
-              itemExtent: 80.0,
               itemCount: snapshot.data.documents.length,
               itemBuilder: (context, index) => TodoListItem(
                 context,
