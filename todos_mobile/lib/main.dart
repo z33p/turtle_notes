@@ -22,6 +22,11 @@ class MyApp extends StatelessWidget {
         title: "Todo App",
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey, width: 1.0),
+            ),
+          ),
         ),
         home: StoreConnector<AppState, List<Todo>>(
           converter: (store) => store.state.todos,

@@ -17,6 +17,7 @@ ThunkAction<AppState> createTodoAction(Todo todo) {
 
 ThunkAction<AppState> updateTodoAction(Todo todo) {
   return (Store<AppState> store) async {
+    todo.updatedAt = DateTime.now();
     await TodosProvider.db.update(todo);
     store.dispatch(UpdateTodoAction(todo));
   };
@@ -26,6 +27,9 @@ ThunkAction<AppState> patchTodoAction(Map<String, dynamic> todo) {
   assert(todo.containsKey(columnId));
 
   return (Store<AppState> store) async {
+    var dateTimeNow = DateTime.now();
+    todo[columnUpdatedAt] = dateTimeNow.toString();
+
     await TodosProvider.db.patch(todo[columnId], todo);
 
     if (todo.containsKey(columnIsDone))

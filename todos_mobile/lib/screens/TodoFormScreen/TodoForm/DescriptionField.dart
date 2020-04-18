@@ -20,11 +20,6 @@ class DescriptionField extends StatelessWidget {
           TextFormField(
             controller: descriptionController,
             maxLines: 4,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 1.0),
-              ),
-            ),
           )
         ],
       ),

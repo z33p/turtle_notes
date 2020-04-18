@@ -28,6 +28,7 @@ AppState todosReducer(AppState state, action) {
       todo.title = action.todo[columnTitle] ?? todo.title;
       todo.description = action.todo[columnDescription] ?? todo.description;
       todo.isDone = action.todo[columnIsDone] ?? todo.isDone;
+      todo.updatedAt = DateTime.parse(action.todo[columnUpdatedAt]);
 
       return todo;
     }).toList());

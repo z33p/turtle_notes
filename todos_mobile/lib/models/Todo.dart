@@ -5,15 +5,19 @@ class Todo {
   String title;
   String description;
   bool isDone;
+  DateTime reminder;
+  List<bool> daysToRemind = new List(7);
 
-  String createdAt;
-  String updatedAt;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Todo(
       {this.id,
       this.title,
       this.description,
       this.isDone = false,
+      this.reminder,
+      this.daysToRemind,
       this.createdAt,
       this.updatedAt});
 
@@ -23,8 +27,10 @@ class Todo {
       title: map[columnTitle],
       description: map[columnDescription],
       isDone: map[columnIsDone] == 1,
-      createdAt: map[columnCreatedAt],
-      updatedAt: map[columnUpdatedAt],
+      reminder: DateTime.parse(map[columnReminder]),
+      daysToRemind: map[columnDaysToRemind].split(",").map((bit) => bit == 1),
+      createdAt: DateTime.parse(map[columnCreatedAt]),
+      updatedAt: DateTime.parse(map[columnUpdatedAt]),
     );
   }
 
@@ -33,8 +39,11 @@ class Todo {
       columnTitle: this.title,
       columnDescription: this.description,
       columnIsDone: this.isDone ? 1 : 0,
-      columnCreatedAt: this.createdAt,
-      columnUpdatedAt: this.updatedAt,
+      columnReminder: this.reminder.toString(),
+      columnDaysToRemind:
+          this.daysToRemind.map((boolean) => boolean ? 1 : 0).join(","),
+      columnCreatedAt: this.createdAt.toString(),
+      columnUpdatedAt: this.updatedAt.toString(),
     };
 
     if (this.id != null) map[columnId] = id;

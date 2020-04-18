@@ -7,6 +7,8 @@ final String columnId = 'id';
 final String columnTitle = 'title';
 final String columnDescription = 'description';
 final String columnIsDone = 'isDone';
+final String columnReminder = 'reminder';
+final String columnDaysToRemind = 'daysToRemind';
 final String columnCreatedAt = 'createdAt';
 final String columnUpdatedAt = 'updatedAt';
 
@@ -34,6 +36,8 @@ class TodosProvider {
             $columnTitle TEXT NOT null,
             $columnDescription TEXT,
             $columnIsDone INTEGER,
+            $columnReminder TEXT,
+            $columnDaysToRemind TEXT,
             $columnCreatedAt TEXT,
             $columnUpdatedAt TEXT
           )
@@ -56,15 +60,14 @@ class TodosProvider {
 
   Future<Todo> insert(Todo todo) async {
     final db = await database;
-    todo.createdAt = DateTime.now().toString();
-    todo.updatedAt = DateTime.now().toString();
+    todo.createdAt = DateTime.now();
+    todo.updatedAt = DateTime.now();
     todo.id = await db.insert(tableName, todo.toMap());
     return todo;
   }
 
   Future<int> update(Todo todo) async {
     final db = await database;
-    todo.updatedAt = DateTime.now().toString();
 
     return await db.update(tableName, todo.toMap(),
         where: "$columnId = ${todo.id}");
@@ -72,7 +75,6 @@ class TodosProvider {
 
   Future<int> patch(int id, Map todo) async {
     final db = await database;
-    todo[columnUpdatedAt] = DateTime.now().toString();
 
     return await db.update(tableName, todo, where: "$columnId = $id");
   }

@@ -24,11 +24,6 @@ class TitleField extends StatelessWidget {
               }
               return null;
             },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 1.0),
-              ),
-            ),
           )
         ],
       ),
