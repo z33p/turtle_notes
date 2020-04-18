@@ -8,12 +8,13 @@
 </p>
 
 ## Todo Model:
-| Attribute    |  Type  |  
-|--------------|--------|
-|    Title     | STRING |
-|  Description |  TEXT  |
-|    isDone    |  BOOL  |
-
+|      Attribute   |     Type    |  
+|------------------|-------------|
+|        title     |    STRING   |
+|     description  |     TEXT    |
+|       isDone     |     BOOL    |
+|       remind     |   DATETIME  |
+|    daysToRemind  |   BIT ARRAY |
 
 <p align="center">
   <img alt="TodoFormScreem.png" src="https://github.com/z33p/todos_mobile/blob/master/.layouts/TodoFormScreem.png" width="311" height="500">
