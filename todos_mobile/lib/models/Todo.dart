@@ -28,7 +28,8 @@ class Todo {
       description: map[columnDescription],
       isDone: map[columnIsDone] == 1,
       reminder: DateTime.parse(map[columnReminder]),
-      daysToRemind: map[columnDaysToRemind].split(",").map((bit) => bit == 1),
+      daysToRemind:
+          map[columnDaysToRemind].split(",").map((bit) => bit == "1").toList(),
       createdAt: DateTime.parse(map[columnCreatedAt]),
       updatedAt: DateTime.parse(map[columnUpdatedAt]),
     );
