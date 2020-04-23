@@ -21,8 +21,8 @@ class MainScreen extends StatelessWidget {
         title: Text(title),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (() {
-          Navigator.push(
+        onPressed: (() async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => TodoFormScreen()),
           );

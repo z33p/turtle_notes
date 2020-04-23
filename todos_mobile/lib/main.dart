@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
+import 'package:todos_mobile/helpers/NotificationsProvider.dart';
 import 'package:todos_mobile/screens/MainScreen/MainScreen.dart';
 import 'package:todos_mobile/store.dart';
 
 import 'models/Todo.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationsProvider.init();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   MyApp() {
-    WidgetsFlutterBinding.ensureInitialized();
     getTodosAction(store);
   }
 
