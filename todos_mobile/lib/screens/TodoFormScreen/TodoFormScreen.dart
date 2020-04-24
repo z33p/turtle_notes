@@ -36,7 +36,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     isDoneController = this.todo?.isDone ?? false;
     var tomorrowDateTime = DateTime.now().add(Duration(days: 1));
     reminderController = TextEditingController(
-        text: this.todo?.reminder ??
+        text: this.todo?.reminder.toString() ??
             "${tomorrowDateTime.day > 10 ? tomorrowDateTime.day : "0" + tomorrowDateTime.day.toString()}-${tomorrowDateTime.month > 10 ? tomorrowDateTime.month : "0" + tomorrowDateTime.month.toString()}-${tomorrowDateTime.year} ${tomorrowDateTime.hour > 10 ? tomorrowDateTime.hour : "0" + tomorrowDateTime.hour.toString()}:${tomorrowDateTime.minute > 10 ? tomorrowDateTime.minute : "0" + tomorrowDateTime.minute.toString()}");
     daysToRemind = this.todo?.daysToRemind ??
         [false, false, false, false, false, false, false];
