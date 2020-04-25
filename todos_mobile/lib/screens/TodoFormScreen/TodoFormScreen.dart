@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
+import 'package:todos_mobile/helpers/datetime.dart';
 import 'package:todos_mobile/models/Todo.dart';
 
 import '../../store.dart';
@@ -42,8 +43,11 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         TextEditingController(text: this.todo?.description ?? "");
     var tomorrowDateTime = DateTime.now().add(Duration(days: 1));
     reminderController = TextEditingController(
-        text: this.todo?.reminder?.toString()?.substring(0, 16) ??
-            "${tomorrowDateTime.day > 10 ? tomorrowDateTime.day : "0" + tomorrowDateTime.day.toString()}-${tomorrowDateTime.month > 10 ? tomorrowDateTime.month : "0" + tomorrowDateTime.month.toString()}-${tomorrowDateTime.year} ${tomorrowDateTime.hour > 10 ? tomorrowDateTime.hour : "0" + tomorrowDateTime.hour.toString()}:${tomorrowDateTime.minute > 10 ? tomorrowDateTime.minute : "0" + tomorrowDateTime.minute.toString()}");
+        text: this.todo?.reminder != null
+            ? swapDayFieldAndYearField(
+                this.todo.reminder.toString().substring(0, 16))
+            : swapDayFieldAndYearField(
+                tomorrowDateTime.toString().substring(0, 16)));
   }
 
   @override
@@ -79,20 +83,12 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   }
 
   Future<void> createOrEditTodo() async {
-    var dateTimeSplited = reminderController.text.split("-");
-    var day = dateTimeSplited[0];
-    var month = dateTimeSplited[1];
-
-    var yearTimeSplited = dateTimeSplited[2].split(" ");
-
-    var year = yearTimeSplited[0];
-    var time = yearTimeSplited[1];
-
     Todo todo = Todo(
         title: titleController.text,
         description: descriptionController.text,
         isDone: isDoneController,
-        reminder: DateTime.parse("$year-$month-$day $time"),
+        reminder:
+            DateTime.parse(swapDayFieldAndYearField(reminderController.text)),
         daysToRemind: daysToRemind);
 
     if (isUpdatingTodoState) {
