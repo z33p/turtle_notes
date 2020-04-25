@@ -8,9 +8,12 @@ class NotificationFields extends StatelessWidget {
   final TextEditingController reminderController;
   final List<bool> daysToRemind;
   final void Function(int index, bool value) setDaysToRemind;
+  final bool isReadingTodo;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
-  NotificationFields(
-      this.reminderController, this.daysToRemind, this.setDaysToRemind);
+  NotificationFields(this.reminderController, this.daysToRemind,
+      this.setDaysToRemind, this.isReadingTodo, this.setIsReadingTodoState);
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +24,13 @@ class NotificationFields extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ReminderField(this.reminderController),
+            child:
+                ReminderField(this.reminderController, setIsReadingTodoState),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: DaysToRemindField(this.daysToRemind, this.setDaysToRemind),
+            child: DaysToRemindField(
+                this.daysToRemind, this.setDaysToRemind, setIsReadingTodoState),
           )
         ],
       ),

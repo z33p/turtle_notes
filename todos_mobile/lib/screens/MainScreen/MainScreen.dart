@@ -27,7 +27,7 @@ class MainScreen extends StatelessWidget {
             MaterialPageRoute(builder: (context) => TodoFormScreen()),
           );
         }),
-        tooltip: "Criar Todo",
+        tooltip: "Criar Tarefa",
         child: Icon(Icons.add),
       ),
       body: RefreshIndicator(

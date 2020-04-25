@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 
 class ReminderField extends StatefulWidget {
   final TextEditingController reminderController;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
-  ReminderField(this.reminderController);
+  ReminderField(this.reminderController, this.setIsReadingTodoState);
 
   @override
   _ReminderFieldState createState() => _ReminderFieldState();
@@ -25,10 +27,10 @@ class _ReminderFieldState extends State<ReminderField> {
           child: Text("Horário"),
         ),
         DateTimeField(
+          textAlign: TextAlign.center,
           controller: widget.reminderController,
           format: DateFormat("dd-MM-yyyy HH:mm"),
           onShowPicker: (context, currentValue) async {
-            print(currentValue);
             final date = await showDatePicker(
                 context: context,
                 firstDate: DateTime(1900),

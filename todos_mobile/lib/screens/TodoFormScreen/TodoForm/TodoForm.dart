@@ -7,6 +7,7 @@ import 'TitleField.dart';
 
 class TodoForm extends StatelessWidget {
   final Todo todo;
+  final bool isReadingTodo;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
   final TextEditingController reminderController;
@@ -14,18 +15,22 @@ class TodoForm extends StatelessWidget {
   final bool isDoneController;
   final void Function(int index, bool value) setDaysToRemind;
   final void Function(bool value) setIsDone;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
   final GlobalKey<FormState> _formKey;
 
   TodoForm(
     this._formKey,
+    this.isReadingTodo,
     this.titleController,
     this.descriptionController,
     this.reminderController,
     this.daysToRemind,
     this.setDaysToRemind,
     this.isDoneController,
-    this.setIsDone, {
+    this.setIsDone,
+    this.setIsReadingTodoState, {
     this.todo,
   });
 
@@ -38,20 +43,24 @@ class TodoForm extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            TitleField(titleController),
-            DescriptionField(descriptionController),
+            TitleField(titleController, isReadingTodo, setIsReadingTodoState),
+            DescriptionField(
+                descriptionController, isReadingTodo, setIsReadingTodoState),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text("Completo"),
                 Checkbox(
                   value: isDoneController,
-                  onChanged: (value) => setIsDone(value),
+                  onChanged: (value) {
+                    if (isReadingTodo) setIsReadingTodoState(false);
+                    setIsDone(value);
+                  },
                 ),
               ],
             ),
             NotificationFields(this.reminderController, this.daysToRemind,
-                this.setDaysToRemind)
+                this.setDaysToRemind, isReadingTodo, setIsReadingTodoState)
           ],
         ),
       ),

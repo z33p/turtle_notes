@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 
 class DescriptionField extends StatelessWidget {
   final TextEditingController descriptionController;
+  final bool isReadingTodo;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
-  DescriptionField(this.descriptionController);
+  DescriptionField(this.descriptionController, this.isReadingTodo,
+      this.setIsReadingTodoState);
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +21,26 @@ class DescriptionField extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.0),
             child: Text("Descrição"),
           ),
-          TextFormField(
-            controller: descriptionController,
-            maxLines: 4,
-          )
+          if (!isReadingTodo ?? true)
+            TextFormField(
+              controller: descriptionController,
+              enabled: !isReadingTodo ?? true,
+              maxLines: 4,
+            )
+          else
+            GestureDetector(
+              onTap: () => setIsReadingTodoState(false),
+              child: Container(
+                color: Colors.transparent,
+                child: IgnorePointer(
+                  child: TextFormField(
+                    controller: descriptionController,
+                    enabled: !isReadingTodo ?? true,
+                    maxLines: 4,
+                  ),
+                ),
+              ),
+            )
         ],
       ),
     );

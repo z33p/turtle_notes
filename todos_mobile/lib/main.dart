@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return StoreProvider<AppState>(
       store: store,
       child: MaterialApp(
-        title: "Todo App",
+        title: "Tarefas",
         theme: ThemeData(
           primarySwatch: Colors.blue,
           inputDecorationTheme: InputDecorationTheme(
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           converter: (store) => store.state.todos,
           builder: (context, todos) => MainScreen(
             todos,
-            title: "Todo App",
+            title: "Tarefas",
           ),
         ),
       ),

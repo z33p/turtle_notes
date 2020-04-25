@@ -73,96 +73,112 @@ class _TodoListItemState extends State<TodoListItem> {
       },
       background: dismissibleBackground(),
       child: Card(
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              leading: Checkbox(
-                value: widget.todo.isDone,
-                onChanged: (value) => store.dispatch(patchTodoAction(
-                    {columnId: widget.todo.id, columnIsDone: value ? 1 : 0})),
+        child: FlatButton(
+          padding: EdgeInsets.all(0.0),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TodoFormScreen(
+                  title: widget.todo.title,
+                  todo: widget.todo,
+                  isReadingTodo: true,
+                ),
               ),
-              title: Text(
-                widget.todo.title.length < 20
-                    ? widget.todo.title
-                    : widget.todo.title.substring(0, 20) + "...",
-                style: TextStyle(
-                    fontSize: 18,
-                    decoration: widget.todo.isDone
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none),
-              ),
-              subtitle: Text(
-                widget.todo.description == null
-                    ? ""
-                    : widget.todo.description.length < 50
-                        ? widget.todo.description
-                        : widget.todo.description.substring(0, 50) + "...",
-                style: TextStyle(
-                    decoration: widget.todo.isDone
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none),
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  // It ends the current Snackbar (if there's one) avoiding memory leak warning
-                  Scaffold.of(context).hideCurrentSnackBar();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TodoFormScreen(
-                        title: "Editar Todo",
-                        todo: widget.todo,
-                        isUpdatingTodo: true,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: widget.todo.daysToRemind
-                    .asMap()
-                    .entries
-                    .map(
-                      (day) => Container(
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                            color: widget.todo.daysToRemind[day.key]
-                                ? Colors.teal
-                                : Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(360)),
-                            border: Border.all(color: Colors.blue, width: 1.0)),
-                        child: Text(
-                          week[day.key],
-                          style: TextStyle(
-                              color: widget.todo.daysToRemind[day.key]
-                                  ? Colors.white
-                                  : Colors.black),
+            );
+          },
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                leading: Checkbox(
+                  value: widget.todo.isDone,
+                  onChanged: (value) => store.dispatch(patchTodoAction(
+                      {columnId: widget.todo.id, columnIsDone: value ? 1 : 0})),
+                ),
+                title: Text(
+                  widget.todo.title.length < 20
+                      ? widget.todo.title
+                      : widget.todo.title.substring(0, 20) + "...",
+                  style: TextStyle(
+                      fontSize: 18,
+                      decoration: widget.todo.isDone
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none),
+                ),
+                subtitle: Text(
+                  widget.todo.description == null
+                      ? ""
+                      : widget.todo.description.length < 50
+                          ? widget.todo.description
+                          : widget.todo.description.substring(0, 50) + "...",
+                  style: TextStyle(
+                      decoration: widget.todo.isDone
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () async {
+                    // It ends the current Snackbar (if there's one) avoiding memory leak warning
+                    Scaffold.of(context).hideCurrentSnackBar();
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TodoFormScreen(
+                          title: "Editar Tarefa",
+                          todo: widget.todo,
+                          isUpdatingTodo: true,
                         ),
                       ),
-                    )
-                    .toList(),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(
-                  "Criado: " + widget.todo.createdAt.toString().split(".")[0],
-                  style: TextStyle(fontSize: 11.0),
+                    );
+                  },
                 ),
-                Text(
-                    "Atualizado: " +
-                        widget.todo.updatedAt.toString().split(".")[0],
-                    style: TextStyle(fontSize: 11.0)),
-              ],
-            )
-          ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: widget.todo.daysToRemind
+                      .asMap()
+                      .entries
+                      .map(
+                        (day) => Container(
+                          padding: EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                              color: widget.todo.daysToRemind[day.key]
+                                  ? Colors.teal
+                                  : Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(360)),
+                              border:
+                                  Border.all(color: Colors.blue, width: 1.0)),
+                          child: Text(
+                            week[day.key],
+                            style: TextStyle(
+                                color: widget.todo.daysToRemind[day.key]
+                                    ? Colors.white
+                                    : Colors.black),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Text(
+                    "Criado: " + widget.todo.createdAt.toString().split(".")[0],
+                    style: TextStyle(fontSize: 11.0),
+                  ),
+                  Text(
+                      "Atualizado: " +
+                          widget.todo.updatedAt.toString().split(".")[0],
+                      style: TextStyle(fontSize: 11.0)),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -11,9 +11,14 @@ class TodoFormScreen extends StatefulWidget {
   final String title;
   final Todo todo;
   final bool isUpdatingTodo;
+  final bool isReadingTodo;
 
-  TodoFormScreen(
-      {this.title = "Criar Todo", this.todo, this.isUpdatingTodo = false});
+  TodoFormScreen({
+    this.title = "Criar Tarefa",
+    this.todo,
+    this.isUpdatingTodo = false,
+    this.isReadingTodo = false,
+  });
 
   @override
   _TodoFormScreenState createState() => _TodoFormScreenState(todo: todo);
@@ -28,18 +33,28 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   TextEditingController reminderController;
   List<bool> daysToRemind;
   bool isDoneController;
+  bool isReadingTodoState;
+  bool isUpdatingTodoState;
 
   _TodoFormScreenState({this.todo}) {
     titleController = TextEditingController(text: this.todo?.title ?? "");
     descriptionController =
         TextEditingController(text: this.todo?.description ?? "");
-    isDoneController = this.todo?.isDone ?? false;
     var tomorrowDateTime = DateTime.now().add(Duration(days: 1));
     reminderController = TextEditingController(
-        text: this.todo?.reminder.toString() ??
+        text: this.todo?.reminder?.toString()?.substring(0, 16) ??
             "${tomorrowDateTime.day > 10 ? tomorrowDateTime.day : "0" + tomorrowDateTime.day.toString()}-${tomorrowDateTime.month > 10 ? tomorrowDateTime.month : "0" + tomorrowDateTime.month.toString()}-${tomorrowDateTime.year} ${tomorrowDateTime.hour > 10 ? tomorrowDateTime.hour : "0" + tomorrowDateTime.hour.toString()}:${tomorrowDateTime.minute > 10 ? tomorrowDateTime.minute : "0" + tomorrowDateTime.minute.toString()}");
-    daysToRemind = this.todo?.daysToRemind ??
-        [false, false, false, false, false, false, false];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    daysToRemind = this.todo?.daysToRemind != null
+        ? [...this.todo?.daysToRemind] // Copy
+        : [false, false, false, false, false, false, false];
+    isDoneController = this.todo?.isDone ?? false;
+    isReadingTodoState = widget.isReadingTodo;
+    isUpdatingTodoState = widget.isUpdatingTodo ?? false;
   }
 
   @protected
@@ -48,20 +63,18 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     titleController.dispose();
     descriptionController.dispose();
     reminderController.dispose();
-    // daysToRemind = [0,0,0,0,0,0,0];
-    // isDoneController = false;
     super.dispose();
   }
 
-  void setDaysToRemind(int index, bool value) {
-    setState(() {
-      daysToRemind[index] = value;
-    });
-  }
+  void setDaysToRemind(int index, bool value) =>
+      setState(() => daysToRemind[index] = value);
 
-  void setIsDone(bool value) {
+  void setIsDone(bool value) => setState(() => isDoneController = value);
+
+  void setIsReadingTodoState(bool isReadingTodo, {bool isUpdatingTodo}) {
     setState(() {
-      isDoneController = value;
+      isReadingTodoState = isReadingTodo;
+      isUpdatingTodoState = isUpdatingTodo ?? !isReadingTodoState;
     });
   }
 
@@ -82,7 +95,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         reminder: DateTime.parse("$year-$month-$day $time"),
         daysToRemind: daysToRemind);
 
-    if (widget.isUpdatingTodo) {
+    if (isUpdatingTodoState) {
       todo.id = this.todo.id;
       todo.createdAt = this.todo.createdAt;
       store.dispatch(updateTodoAction(todo));
@@ -95,16 +108,30 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+          title: isReadingTodoState
+              ? Text(widget.title)
+              : Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(Icons.edit),
+                    ),
+                    Text(widget.title)
+                  ],
+                )),
       floatingActionButton: FormScreenActionButton(
         _formKey,
         createOrEditTodo,
-        widget.isUpdatingTodo,
+        isUpdatingTodoState,
+        isReadingTodoState,
+        setIsReadingTodoState,
         () => Navigator.pop(context),
       ),
       body: SingleChildScrollView(
         child: TodoForm(
           _formKey,
+          isReadingTodoState,
           titleController,
           descriptionController,
           reminderController,
@@ -112,6 +139,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
           setDaysToRemind,
           isDoneController,
           setIsDone,
+          setIsReadingTodoState,
         ),
       ),
     );

@@ -15,8 +15,11 @@ final labelIndex = "labelIndex";
 class DaysToRemindField extends StatefulWidget {
   final List<bool> daysToRemind;
   final void Function(int index, bool value) setDaysToRemind;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
-  DaysToRemindField(this.daysToRemind, this.setDaysToRemind);
+  DaysToRemindField(
+      this.daysToRemind, this.setDaysToRemind, this.setIsReadingTodoState);
 
   @override
   _DaysToRemindFieldState createState() => _DaysToRemindFieldState();
@@ -73,8 +76,12 @@ class _DaysToRemindFieldState extends State<DaysToRemindField> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: week.entries
                 .map((day) => GestureDetector(
-                      onTap: () => widget.setDaysToRemind(day.value[labelIndex],
-                          !widget.daysToRemind[day.value[labelIndex]]),
+                      onTap: () {
+                        widget.setIsReadingTodoState(false,
+                            isUpdatingTodo: false);
+                        widget.setDaysToRemind(day.value[labelIndex],
+                            !widget.daysToRemind[day.value[labelIndex]]);
+                      },
                       child: Container(
                         padding: EdgeInsets.all(10.0),
                         decoration: BoxDecoration(

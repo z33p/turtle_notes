@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 
 class TitleField extends StatelessWidget {
   final TextEditingController titleController;
+  final bool isReadingTodo;
+  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
+      setIsReadingTodoState;
 
-  TitleField(this.titleController);
+  TitleField(
+      this.titleController, this.isReadingTodo, this.setIsReadingTodoState);
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +20,38 @@ class TitleField extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.0),
             child: Text("Título"),
           ),
-          TextFormField(
-            controller: titleController,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          )
+          if (!isReadingTodo ?? true)
+            TextFormField(
+              textAlign: TextAlign.center,
+              controller: titleController,
+              enabled: !isReadingTodo ?? true,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+            )
+          else
+            GestureDetector(
+              onTap: () => setIsReadingTodoState(false),
+              child: Container(
+                color: Colors.transparent,
+                child: IgnorePointer(
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    controller: titleController,
+                    enabled: !isReadingTodo ?? true,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            )
         ],
       ),
     );
