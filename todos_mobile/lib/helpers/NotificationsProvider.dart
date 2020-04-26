@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
+import 'package:todos_mobile/models/Todo.dart';
 
 class NotificationsProvider {
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -34,7 +35,7 @@ class NotificationsProvider {
   }
 
   static Future<void> init() async {
-    androidInitializationSettings = AndroidInitializationSettings('app_icon');
+    androidInitializationSettings = AndroidInitializationSettings("app_icon");
     iosInitializationSettings = IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
     initializationSettings = InitializationSettings(
@@ -57,14 +58,14 @@ class NotificationsProvider {
 
   static Future<void> showNotificationWithNoBody() async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+        "your channel id", "your channel name", "your channel description",
+        importance: Importance.Max, priority: Priority.High, ticker: "ticker");
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', null, platformChannelSpecifics,
-        payload: 'item x');
+        0, "plain title", null, platformChannelSpecifics,
+        payload: "item x");
   }
 
   static Future<void> cancelNotification(int id) async {
@@ -86,21 +87,84 @@ class NotificationsProvider {
         "<b>silent</b> body", platformChannelSpecifics);
   }
 
-  static Future<void> scheduleNotification() async {
-    var scheduledNotificationDateTime =
-        DateTime.now().add(Duration(seconds: 2));
+  static Future<void> scheduleNotification(Todo todo) async {
+    var scheduledNotificationDateTime = todo.reminderDateTime;
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your other channel id',
-        'your other channel name',
-        'your other channel description');
+        "your other channel id",
+        "your other channel name",
+        "your other channel description");
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await NotificationsProvider.flutterLocalNotificationsPlugin.schedule(
-        0,
-        'scheduled title',
-        'scheduled body',
+        todo.id,
+        todo.title,
+        "scheduled body",
         scheduledNotificationDateTime,
         platformChannelSpecifics);
+  }
+
+  static String toTwoDigitString(int value) {
+    return value.toString().padLeft(2, '0');
+  }
+
+  static Future<void> scheduleNotificationDaily(Todo todo) async {
+    var time = Time(todo.reminderDateTime.hour, todo.reminderDateTime.minute,
+        todo.reminderDateTime.second);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'repeatDailyAtTime channel id',
+        'repeatDailyAtTime channel name',
+        'repeatDailyAtTime description');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+        todo.id,
+        todo.title,
+        'Daily notification shown at approximately ${toTwoDigitString(time.hour)}:${toTwoDigitString(time.minute)}:${toTwoDigitString(time.second)}',
+        time,
+        platformChannelSpecifics);
+  }
+
+  static Future<void> scheduleNotificationWeekly(Todo todo) async {
+    var time = Time(todo.reminderDateTime.hour, todo.reminderDateTime.minute,
+        todo.reminderDateTime.second);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'show weekly channel id',
+        'show weekly channel name',
+        'show weekly description');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+        todo.id,
+        todo.title,
+        'Weekly notification shown on Monday at approximately ${toTwoDigitString(time.hour)}:${toTwoDigitString(time.minute)}:${toTwoDigitString(time.second)}',
+        Day.values[todo.daysToRemind.indexWhere((day) => day)],
+        time,
+        platformChannelSpecifics);
+  }
+
+  static Future<void> checkPendingNotificationRequests(
+      BuildContext context) async {
+    var pendingNotificationRequests =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+              "${pendingNotificationRequests.length} pending notification requests"),
+          actions: [
+            FlatButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
