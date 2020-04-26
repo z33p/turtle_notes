@@ -31,9 +31,9 @@ class Todo {
   Todo({
     this.id,
     this.title,
-    this.description,
+    this.description = "",
     this.isDone = false,
-    this.repeatReminder,
+    this.repeatReminder = TimePeriods.NEVER,
     this.reminderDateTime,
     this.daysToRemind = const [false, false, false, false, false, false, false],
     this.createdAt,

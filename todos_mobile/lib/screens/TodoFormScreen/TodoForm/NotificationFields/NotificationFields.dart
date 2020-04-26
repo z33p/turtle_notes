@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:todos_mobile/models/Todo.dart';
-import 'package:todos_mobile/screens/TodoFormScreen/TodoForm/NotificationFields/ReminderField.dart';
+import 'package:todos_mobile/screens/TodoFormScreen/TodoForm/NotificationFields/ReminderDateTimeField.dart';
 
 import 'DaysToRemindField.dart';
 
@@ -34,7 +34,7 @@ class NotificationFields extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ReminderField(
+            child: ReminderDateTimeField(
                 this.reminderDateTimeController, setIsReadingTodoState),
           ),
           Padding(

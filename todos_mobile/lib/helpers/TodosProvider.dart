@@ -21,7 +21,7 @@ class TodosProvider {
   Future<Database> get database async {
     if (_database != null) return _database;
 
-    await deleteDatabase(join(await getDatabasesPath(), "todos.db"));
+    // await deleteDatabase(join(await getDatabasesPath(), "todos.db"));
     _database = await initDB();
     return _database;
   }
