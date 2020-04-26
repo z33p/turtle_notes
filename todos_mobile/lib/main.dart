@@ -27,6 +27,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           inputDecorationTheme: InputDecorationTheme(
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 14.0, horizontal: 8.0),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey, width: 1.0),
             ),

@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
+import 'package:todos_mobile/helpers/datetime.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/screens/TodoFormScreen/TodoFormScreen.dart';
+import 'package:todos_mobile/screens/TodoFormScreen/TodoForm/NotificationFields/DaysToRemindField.dart';
 
 import '../../store.dart';
-
-final List<String> week = ["Do", "Se", "Te", "Qu", "Qi", "Se", "Sá"];
 
 class TodoListItem extends StatefulWidget {
   final Todo todo;
@@ -135,7 +135,7 @@ class _TodoListItemState extends State<TodoListItem> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: widget.todo.daysToRemind
@@ -143,18 +143,20 @@ class _TodoListItemState extends State<TodoListItem> {
                       .entries
                       .map(
                         (day) => Container(
-                          padding: EdgeInsets.all(10.0),
+                          padding: EdgeInsets.all(7.0),
                           decoration: BoxDecoration(
                               color: widget.todo.daysToRemind[day.key]
-                                  ? Colors.teal
+                                  ? Colors.grey
                                   : Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(360)),
+                              // borderRadius:
+                              //     BorderRadius.all(Radius.circular(360)),
                               border:
-                                  Border.all(color: Colors.blue, width: 1.0)),
+                                  Border.all(color: Colors.grey, width: 1.0)),
                           child: Text(
-                            week[day.key],
+                            weekDaysLabels[day.key],
                             style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0,
                                 color: widget.todo.daysToRemind[day.key]
                                     ? Colors.white
                                     : Colors.black),
@@ -168,12 +170,15 @@ class _TodoListItemState extends State<TodoListItem> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text(
-                    "Criado: " + widget.todo.createdAt.toString().split(".")[0],
+                    "Criado: " +
+                        swapDayFieldAndYearField(
+                            widget.todo.createdAt.toString().split(".")[0]),
                     style: TextStyle(fontSize: 11.0),
                   ),
                   Text(
                       "Atualizado: " +
-                          widget.todo.updatedAt.toString().split(".")[0],
+                          swapDayFieldAndYearField(
+                              widget.todo.updatedAt.toString().split(".")[0]),
                       style: TextStyle(fontSize: 11.0)),
                 ],
               )

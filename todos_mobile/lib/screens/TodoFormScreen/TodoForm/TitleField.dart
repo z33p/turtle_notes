@@ -12,7 +12,7 @@ class TitleField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 14.0),
+      padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -25,9 +25,10 @@ class TitleField extends StatelessWidget {
               textAlign: TextAlign.center,
               controller: titleController,
               enabled: !isReadingTodo ?? true,
+              maxLines: 1,
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter some text';
+                  return "Por favor, insira um título";
                 }
                 return null;
               },
@@ -44,7 +45,7 @@ class TitleField extends StatelessWidget {
                     enabled: !isReadingTodo ?? true,
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Please enter some text';
+                        return "Por favor, insira um título";
                       }
                       return null;
                     },
