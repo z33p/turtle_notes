@@ -1,25 +1,44 @@
 import 'package:todos_mobile/helpers/TodosProvider.dart';
 
+enum TimePeriods { NEVER, CHOOSE_DAYS, DAILY, WEEKLY, MONTHLY }
+
+List<String> timesPeriodsLabels = [
+  "Nunca",
+  "Escolher dias",
+  "Diariamente",
+  "Semanalmente",
+  "Mensalmente",
+];
+
+extension TimesPeriodsExtension on TimePeriods {
+  String get label {
+    return timesPeriodsLabels[this.index];
+  }
+}
+
 class Todo {
   int id;
   String title;
   String description;
   bool isDone;
-  DateTime reminder;
+  TimePeriods repeatReminder;
+  DateTime reminderDateTime;
   List<bool> daysToRemind = new List(7);
 
   DateTime createdAt;
   DateTime updatedAt;
 
-  Todo(
-      {this.id,
-      this.title,
-      this.description,
-      this.isDone = false,
-      this.reminder,
-      this.daysToRemind,
-      this.createdAt,
-      this.updatedAt});
+  Todo({
+    this.id,
+    this.title,
+    this.description,
+    this.isDone = false,
+    this.repeatReminder,
+    this.reminderDateTime,
+    this.daysToRemind = const [false, false, false, false, false, false, false],
+    this.createdAt,
+    this.updatedAt,
+  });
 
   factory Todo.fromMap(Map<String, dynamic> map) {
     return Todo(
@@ -27,7 +46,9 @@ class Todo {
       title: map[columnTitle],
       description: map[columnDescription],
       isDone: map[columnIsDone] == 1,
-      reminder: DateTime.parse(map[columnReminder]),
+      repeatReminder: TimePeriods.values
+          .firstWhere((value) => value.toString() == map[columnRepeatReminder]),
+      reminderDateTime: DateTime.parse(map[columnReminderDateTime]),
       daysToRemind: map[columnDaysToRemind]
           .split(",")
           .map<bool>((bit) => bit == "1")
@@ -42,7 +63,8 @@ class Todo {
       columnTitle: this.title,
       columnDescription: this.description,
       columnIsDone: this.isDone ? 1 : 0,
-      columnReminder: this.reminder.toString(),
+      columnRepeatReminder: this.repeatReminder.toString(),
+      columnReminderDateTime: this.reminderDateTime.toString(),
       columnDaysToRemind:
           this.daysToRemind.map((boolean) => boolean ? 1 : 0).join(","),
       columnCreatedAt: this.createdAt.toString(),

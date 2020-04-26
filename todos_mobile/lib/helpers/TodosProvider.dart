@@ -2,15 +2,16 @@ import "package:path/path.dart";
 import "package:sqflite/sqflite.dart";
 import "package:todos_mobile/models/Todo.dart";
 
-final String tableName = 'todos';
-final String columnId = 'id';
-final String columnTitle = 'title';
-final String columnDescription = 'description';
-final String columnIsDone = 'isDone';
-final String columnReminder = 'reminder';
-final String columnDaysToRemind = 'daysToRemind';
-final String columnCreatedAt = 'createdAt';
-final String columnUpdatedAt = 'updatedAt';
+final String tableName = "todos";
+final String columnId = "id";
+final String columnTitle = "title";
+final String columnDescription = "description";
+final String columnIsDone = "isDone";
+final String columnRepeatReminder = "repeatReminder";
+final String columnReminderDateTime = "reminderDateTime";
+final String columnDaysToRemind = "daysToRemind";
+final String columnCreatedAt = "createdAt";
+final String columnUpdatedAt = "updatedAt";
 
 class TodosProvider {
   TodosProvider._();
@@ -20,7 +21,7 @@ class TodosProvider {
   Future<Database> get database async {
     if (_database != null) return _database;
 
-    // await deleteDatabase(join(await getDatabasesPath(), "todos.db"));
+    await deleteDatabase(join(await getDatabasesPath(), "todos.db"));
     _database = await initDB();
     return _database;
   }
@@ -33,10 +34,11 @@ class TodosProvider {
           """
           CREATE TABLE $tableName(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            $columnTitle TEXT NOT null,
+            $columnTitle TEXT NOT NULL,
             $columnDescription TEXT,
             $columnIsDone INTEGER,
-            $columnReminder TEXT,
+            $columnRepeatReminder TEXT NOT NULL,
+            $columnReminderDateTime TEXT,
             $columnDaysToRemind TEXT,
             $columnCreatedAt TEXT,
             $columnUpdatedAt TEXT
