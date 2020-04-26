@@ -1,68 +1,41 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
+import '../../../../models/Todo.dart';
 
-final sunday = "Sunday";
-final monday = "Monday";
-final tuesday = "Tuesday";
-final wednesday = "Wednesday";
-final thursday = "Thursday";
-final friday = "Friday";
-final saturday = "Saturday";
+enum WeekDays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
 
-final isToAlert = "isToAlert";
-final label = "label";
-final labelIndex = "labelIndex";
+List<String> weekDaysLabels = [
+  "Do",
+  "Se",
+  "Te",
+  "Qu",
+  "Qi",
+  "Se",
+  "Sá",
+];
 
-class DaysToRemindField extends StatefulWidget {
+extension WeekDaysExtension on WeekDays {
+  String get label {
+    return weekDaysLabels[this.index];
+  }
+}
+
+class DaysToRemindField extends StatelessWidget {
+  final TimePeriods selectedTimePeriod;
+  final void Function(TimePeriods value) setRepeatReminder;
   final List<bool> daysToRemind;
-  final void Function(int index, bool value) setDaysToRemind;
+  final bool isReadingTodo;
+  final void Function(List<bool> days, {int index, bool value}) setDaysToRemind;
   final void Function(bool isReadingTodo, {bool isUpdatingTodo})
       setIsReadingTodoState;
 
   DaysToRemindField(
-      this.daysToRemind, this.setDaysToRemind, this.setIsReadingTodoState);
-
-  @override
-  _DaysToRemindFieldState createState() => _DaysToRemindFieldState();
-}
-
-class _DaysToRemindFieldState extends State<DaysToRemindField> {
-  Map<String, Map<String, dynamic>> week;
-
-  @protected
-  @mustCallSuper
-  void initState() {
-    super.initState();
-    week = {
-      sunday: {
-        label: "Do",
-        labelIndex: 0,
-      },
-      monday: {
-        label: "Se",
-        labelIndex: 1,
-      },
-      tuesday: {
-        label: "Te",
-        labelIndex: 2,
-      },
-      wednesday: {
-        label: "Qu",
-        labelIndex: 3,
-      },
-      thursday: {
-        label: "Qi",
-        labelIndex: 4,
-      },
-      friday: {
-        label: "Se",
-        labelIndex: 5,
-      },
-      saturday: {
-        label: "Sá",
-        labelIndex: 6,
-      },
-    };
-  }
+    this.selectedTimePeriod,
+    this.setRepeatReminder,
+    this.daysToRemind,
+    this.setDaysToRemind,
+    this.isReadingTodo,
+    this.setIsReadingTodoState,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -70,39 +43,105 @@ class _DaysToRemindFieldState extends State<DaysToRemindField> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text("Repetir"),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: week.entries
-                .map((day) => GestureDetector(
-                      onTap: () {
-                        widget.setIsReadingTodoState(false,
-                            isUpdatingTodo: false);
-                        widget.setDaysToRemind(day.value[labelIndex],
-                            !widget.daysToRemind[day.value[labelIndex]]);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                            color: widget.daysToRemind[day.value[labelIndex]]
-                                ? Colors.teal
-                                : Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(360)),
-                            border: Border.all(color: Colors.blue, width: 1.0)),
-                        child: Text(
-                          day.value[label],
-                          style: TextStyle(
-                              color: widget.daysToRemind[day.value[labelIndex]]
-                                  ? Colors.white
-                                  : Colors.black),
-                        ),
-                      ),
-                    ))
-                .toList(),
+        Center(
+          child: DropdownButton<String>(
+            value: selectedTimePeriod.label,
+            items: <String>[
+              TimePeriods.NEVER.label,
+              TimePeriods.CHOOSE_DAYS.label,
+              TimePeriods.DAILY.label,
+              TimePeriods.WEEKLY.label,
+              TimePeriods.MONTHLY.label,
+            ].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String value) {
+              if (value == TimePeriods.DAILY.label)
+                setDaysToRemind([true, true, true, true, true, true, true]);
+              else if (value == TimePeriods.WEEKLY.label) {
+                var onlyThisDay = [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ];
+                var weekDay = DateTime.now().weekday;
+                onlyThisDay[weekDay == 7 ? 0 : weekDay] = true;
+                setDaysToRemind(onlyThisDay);
+              } else
+                setDaysToRemind(
+                  [false, false, false, false, false, false, false],
+                );
+
+              setRepeatReminder(TimePeriods.values
+                  .firstWhere((timePeriod) => timePeriod.label == value));
+            },
           ),
         ),
+        if (selectedTimePeriod == TimePeriods.NEVER)
+          Container()
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 18.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: WeekDays.values
+                  .map((day) => GestureDetector(
+                        onTap: () {
+                          if (isReadingTodo)
+                            setIsReadingTodoState(false, isUpdatingTodo: true);
+
+                          setDaysToRemind(
+                            null,
+                            index: day.index,
+                            value: !daysToRemind[day.index],
+                          );
+
+                          if (daysToRemind.every((bool day) => day))
+                            setRepeatReminder(TimePeriods.DAILY);
+                          else if (selectedTimePeriod == TimePeriods.DAILY &&
+                              daysToRemind.any((day) => !day))
+                            setRepeatReminder(TimePeriods.CHOOSE_DAYS);
+                          else if (selectedTimePeriod == TimePeriods.WEEKLY &&
+                              daysToRemind.where((day) => day).length > 1)
+                            setRepeatReminder(TimePeriods.CHOOSE_DAYS);
+                          else if (selectedTimePeriod ==
+                                  TimePeriods.CHOOSE_DAYS &&
+                              daysToRemind.where((day) => day).length == 1) {
+                            var weekDay = DateTime.now().weekday;
+                            weekDay = weekDay == 7 ? 0 : weekDay;
+                            if (daysToRemind[weekDay])
+                              setRepeatReminder(TimePeriods.WEEKLY);
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                              color: daysToRemind[day.index]
+                                  ? Colors.teal
+                                  : Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(360)),
+                              border:
+                                  Border.all(color: Colors.blue, width: 1.0)),
+                          child: Text(
+                            day.label,
+                            style: TextStyle(
+                                color: daysToRemind[day.index]
+                                    ? Colors.white
+                                    : Colors.black),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
       ],
     );
   }

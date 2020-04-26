@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
+import 'package:todos_mobile/helpers/NotificationsProvider.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
 import 'package:todos_mobile/helpers/datetime.dart';
 import 'package:todos_mobile/models/Todo.dart';
@@ -31,28 +32,31 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
   TextEditingController titleController;
   TextEditingController descriptionController;
-  TextEditingController reminderController;
+  TimePeriods selectedTimePeriod;
+  TextEditingController reminderDateTimeController;
   List<bool> daysToRemind;
   bool isDoneController;
   bool isReadingTodoState;
   bool isUpdatingTodoState;
 
-  _TodoFormScreenState({this.todo}) {
-    titleController = TextEditingController(text: this.todo?.title ?? "");
-    descriptionController =
-        TextEditingController(text: this.todo?.description ?? "");
-    var tomorrowDateTime = DateTime.now().add(Duration(days: 1));
-    reminderController = TextEditingController(
-        text: this.todo?.reminder != null
-            ? swapDayFieldAndYearField(
-                this.todo.reminder.toString().substring(0, 16))
-            : swapDayFieldAndYearField(
-                tomorrowDateTime.toString().substring(0, 16)));
-  }
+  _TodoFormScreenState({this.todo});
 
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController(text: this.todo?.title ?? "");
+    descriptionController =
+        TextEditingController(text: this.todo?.description ?? "");
+    reminderDateTimeController = TextEditingController(
+        text: this.todo?.reminderDateTime != null
+            ? swapDayFieldAndYearField(
+                this.todo.reminderDateTime.toString().substring(0, 16))
+            : swapDayFieldAndYearField(DateTime.now()
+                .add(Duration(days: 1))
+                .toString()
+                .substring(0, 16)));
+
+    selectedTimePeriod = TimePeriods.NEVER;
     daysToRemind = this.todo?.daysToRemind != null
         ? [...this.todo?.daysToRemind] // Copy
         : [false, false, false, false, false, false, false];
@@ -66,12 +70,21 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
-    reminderController.dispose();
+    reminderDateTimeController.dispose();
     super.dispose();
   }
 
-  void setDaysToRemind(int index, bool value) =>
-      setState(() => daysToRemind[index] = value);
+  void setRepeatReminder(TimePeriods value) =>
+      setState(() => selectedTimePeriod = value);
+
+  void setDaysToRemind(
+    List<bool> days, {
+    int index,
+    bool value,
+  }) {
+    if (days != null) return setState(() => daysToRemind = days);
+    return setState(() => daysToRemind[index] = value);
+  }
 
   void setIsDone(bool value) => setState(() => isDoneController = value);
 
@@ -83,12 +96,25 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   }
 
   Future<void> createOrEditTodo() async {
+    var whenRepeat;
+    int amountOfDaysToRemind = daysToRemind.where((day) => day).length;
+    // If every day is to remind set reapeatReminder as daily
+    if (amountOfDaysToRemind == 7)
+      whenRepeat = TimePeriods.DAILY;
+    // If none day is to remind set reapeatReminder as never
+    else if (amountOfDaysToRemind == 0)
+      whenRepeat = TimePeriods.NEVER;
+    // Default
+    else
+      whenRepeat = selectedTimePeriod;
+
     Todo todo = Todo(
         title: titleController.text,
         description: descriptionController.text,
         isDone: isDoneController,
-        reminder:
-            DateTime.parse(swapDayFieldAndYearField(reminderController.text)),
+        repeatReminder: whenRepeat,
+        reminderDateTime: DateTime.parse(
+            swapDayFieldAndYearField(reminderDateTimeController.text)),
         daysToRemind: daysToRemind);
 
     if (isUpdatingTodoState) {
@@ -96,8 +122,23 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
       todo.createdAt = this.todo.createdAt;
       store.dispatch(updateTodoAction(todo));
     } else {
-      Todo created = await TodosProvider.db.insert(todo);
-      store.dispatch(createTodoAction(created));
+      Todo todoCreated = await TodosProvider.db.insert(todo);
+
+      await setNotification(todoCreated);
+
+      store.dispatch(createTodoAction(todoCreated));
+    }
+  }
+
+  Future<void> setNotification(Todo todo) async {
+    switch (todo.repeatReminder) {
+      case TimePeriods.NEVER:
+        return await NotificationsProvider.scheduleNotification(todo);
+
+      case TimePeriods.DAILY:
+        return await NotificationsProvider.scheduleNotificationDaily(todo);
+      default:
+        return;
     }
   }
 
@@ -107,15 +148,17 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
       appBar: AppBar(
           title: isReadingTodoState
               ? Text(widget.title)
-              : Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.edit),
-                    ),
-                    Text(widget.title)
-                  ],
-                )),
+              : !isUpdatingTodoState
+                  ? Text(widget.title)
+                  : Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Icon(Icons.edit),
+                        ),
+                        Text(widget.title)
+                      ],
+                    )),
       floatingActionButton: FormScreenActionButton(
         _formKey,
         createOrEditTodo,
@@ -130,7 +173,9 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
           isReadingTodoState,
           titleController,
           descriptionController,
-          reminderController,
+          selectedTimePeriod,
+          setRepeatReminder,
+          reminderDateTimeController,
           daysToRemind,
           setDaysToRemind,
           isDoneController,

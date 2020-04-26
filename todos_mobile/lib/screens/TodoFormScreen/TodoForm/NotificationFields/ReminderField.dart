@@ -4,11 +4,11 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 
 class ReminderField extends StatefulWidget {
-  final TextEditingController reminderController;
+  final TextEditingController reminderDateTimeController;
   final void Function(bool isReadingTodo, {bool isUpdatingTodo})
       setIsReadingTodoState;
 
-  ReminderField(this.reminderController, this.setIsReadingTodoState);
+  ReminderField(this.reminderDateTimeController, this.setIsReadingTodoState);
 
   @override
   _ReminderFieldState createState() => _ReminderFieldState();
@@ -28,7 +28,7 @@ class _ReminderFieldState extends State<ReminderField> {
         ),
         DateTimeField(
           textAlign: TextAlign.center,
-          controller: widget.reminderController,
+          controller: widget.reminderDateTimeController,
           format: DateFormat("dd-MM-yyyy HH:mm"),
           onShowPicker: (context, currentValue) async {
             final date = await showDatePicker(
