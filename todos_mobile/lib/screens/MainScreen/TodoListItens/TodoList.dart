@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
-import 'package:todos_mobile/helpers/datetime.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/screens/MainScreen/TodoListItens/DaysToRemindView.dart';
 import 'package:todos_mobile/screens/MainScreen/TodoListItens/TodoListTrailing.dart';
@@ -132,15 +132,14 @@ class _TodoListState extends State<TodoList> {
                     children: <Widget>[
                       Text(
                         "Criado: " +
-                            swapDayFieldAndYearField(
-                                widget.todo.createdAt.toString().split(".")[0]),
+                            DateFormat("dd-MM-yyyy hh:mm")
+                                .format(widget.todo.createdAt),
                         style: TextStyle(fontSize: 11.0),
                       ),
                       Text(
                           "Atualizado: " +
-                              swapDayFieldAndYearField(widget.todo.updatedAt
-                                  .toString()
-                                  .split(".")[0]),
+                              DateFormat("dd-MM-yyyy hh:mm")
+                                  .format(widget.todo.updatedAt),
                           style: TextStyle(fontSize: 11.0)),
                     ],
                   )

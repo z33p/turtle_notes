@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/NotificationsProvider.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
-import 'package:todos_mobile/helpers/datetime.dart';
 import 'package:todos_mobile/models/Todo.dart';
 
 import '../../store.dart';
@@ -49,12 +49,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         TextEditingController(text: this.todo?.description ?? "");
     reminderDateTimeController = TextEditingController(
         text: this.todo?.reminderDateTime != null
-            ? swapDayFieldAndYearField(
-                this.todo.reminderDateTime.toString().substring(0, 16))
-            : swapDayFieldAndYearField(DateTime.now()
-                .add(Duration(days: 1))
-                .toString()
-                .substring(0, 16)));
+            ? DateFormat("dd-MM-yyyy hh:mm").format(this.todo.reminderDateTime)
+            : DateFormat("dd-MM-yyyy hh:mm").format(DateTime.now()));
 
     selectedTimePeriod = TimePeriods.NEVER;
     daysToRemind = this.todo?.daysToRemind != null
@@ -113,8 +109,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         description: descriptionController.text,
         isDone: isDoneController,
         repeatReminder: whenRepeat,
-        reminderDateTime: DateTime.parse(
-            swapDayFieldAndYearField(reminderDateTimeController.text)),
+        reminderDateTime: DateFormat("dd-MM-yyyy hh:mm")
+            .parse(reminderDateTimeController.text),
         daysToRemind: daysToRemind);
 
     if (isUpdatingTodoState) {
