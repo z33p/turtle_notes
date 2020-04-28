@@ -6,14 +6,16 @@ import 'package:todos_mobile/models/Todo.dart';
 
 class ReminderDateTimeField extends StatelessWidget {
   final TimePeriods selectedTimePeriod;
-
   final TextEditingController reminderDateTimeController;
+
+  final bool isReadingTodo;
   final void Function(bool isReadingTodo, {bool isUpdatingTodo})
       setIsReadingTodoState;
 
   ReminderDateTimeField(
     this.selectedTimePeriod,
     this.reminderDateTimeController,
+    this.isReadingTodo,
     this.setIsReadingTodoState,
   );
 
@@ -32,6 +34,9 @@ class ReminderDateTimeField extends StatelessWidget {
             textAlign: TextAlign.center,
             controller: reminderDateTimeController,
             format: DateFormat("HH:mm"),
+            onChanged: (value) {
+              if (isReadingTodo) setIsReadingTodoState(false);
+            },
             onShowPicker: (context, currentValue) async {
               final time = await showTimePicker(
                 context: context,
@@ -47,6 +52,9 @@ class ReminderDateTimeField extends StatelessWidget {
             textAlign: TextAlign.center,
             controller: reminderDateTimeController,
             format: DateFormat("dd-MM-yyyy HH:mm"),
+            onChanged: (value) {
+              if (isReadingTodo) setIsReadingTodoState(false);
+            },
             onShowPicker: (context, currentValue) async {
               final date = await showDatePicker(
                   context: context,
