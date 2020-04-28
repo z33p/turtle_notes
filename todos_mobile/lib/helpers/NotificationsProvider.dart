@@ -139,7 +139,7 @@ class NotificationsProvider {
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
         todo.id,
         todo.title,
-        'Weekly notification shown on Monday at approximately ${toTwoDigitString(time.hour)}:${toTwoDigitString(time.minute)}:${toTwoDigitString(time.second)}',
+        todo.description,
         Day.values[todo.daysToRemind.indexWhere((day) => day)],
         time,
         platformChannelSpecifics);
