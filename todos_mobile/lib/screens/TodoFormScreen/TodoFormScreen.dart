@@ -70,8 +70,30 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     super.dispose();
   }
 
-  void setRepeatReminder(TimePeriods value) =>
-      setState(() => selectedTimePeriod = value);
+  void setRepeatReminder(TimePeriods value) {
+    /** It also changes reminderDateTimeController
+     * to represent DateTime "dd-MM-yyyy HH:mm" for TimePeriods.NEVER
+     * And to represent only time "HH:mm" to others
+     */
+    if (value != TimePeriods.NEVER && value != TimePeriods.MONTHLY) {
+      if (reminderDateTimeController.text.length != 5) {
+        reminderDateTimeController.text = DateFormat("HH:mm").format(
+            DateFormat("dd-MM-yyyy HH:mm")
+                .parse(reminderDateTimeController.text));
+      }
+      setState(() {
+        return selectedTimePeriod = value;
+      });
+    } else {
+      if (reminderDateTimeController.text.length == 5)
+        reminderDateTimeController.text = DateFormat("dd-MM-yyyy ")
+                .format(this.todo?.reminderDateTime ?? DateTime.now()) +
+            reminderDateTimeController.text;
+      setState(() {
+        return selectedTimePeriod = value;
+      });
+    }
+  }
 
   void setDaysToRemind(
     List<bool> days, {
@@ -93,25 +115,31 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
   Future<void> createOrEditTodo() async {
     var whenRepeat;
-    int amountOfDaysToRemind = daysToRemind.where((day) => day).length;
-    // If every day is to remind set reapeatReminder as daily
-    if (amountOfDaysToRemind == 7)
-      whenRepeat = TimePeriods.DAILY;
+    int amountOfDaysToRemind =
+        daysToRemind.where((bool isDayToRemind) => isDayToRemind).length;
+
     // If none day is to remind set reapeatReminder as never
-    else if (amountOfDaysToRemind == 0)
+    if (amountOfDaysToRemind == 0)
       whenRepeat = TimePeriods.NEVER;
     // Default
     else
       whenRepeat = selectedTimePeriod;
 
+    DateTime reminderDateTime = selectedTimePeriod == TimePeriods.NEVER ||
+            selectedTimePeriod == TimePeriods.NEVER
+        ? DateFormat("dd-MM-yyyy hh:mm").parse(reminderDateTimeController.text)
+        : DateTime.parse(DateFormat("yyyy-MM-dd ")
+                .format(this.todo?.reminderDateTime ?? DateTime.now()) +
+            reminderDateTimeController.text);
+
     Todo todo = Todo(
-        title: titleController.text,
-        description: descriptionController.text,
-        isDone: isDoneController,
-        repeatReminder: whenRepeat,
-        reminderDateTime: DateFormat("dd-MM-yyyy hh:mm")
-            .parse(reminderDateTimeController.text),
-        daysToRemind: daysToRemind);
+      title: titleController.text,
+      description: descriptionController.text,
+      isDone: isDoneController,
+      repeatReminder: whenRepeat,
+      reminderDateTime: reminderDateTime,
+      daysToRemind: daysToRemind,
+    );
 
     if (isUpdatingTodoState) {
       todo.id = this.todo.id;

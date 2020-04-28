@@ -35,7 +35,10 @@ class NotificationFields extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: ReminderDateTimeField(
-                this.reminderDateTimeController, setIsReadingTodoState),
+              this.selectedTimePeriod,
+              this.reminderDateTimeController,
+              setIsReadingTodoState,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
