@@ -44,24 +44,18 @@ class DaysToRemindField extends StatelessWidget {
       children: <Widget>[
         Text("Repetir"),
         Center(
-          child: DropdownButton<String>(
-            value: selectedTimePeriod.label,
-            items: <String>[
-              TimePeriods.NEVER.label,
-              TimePeriods.CHOOSE_DAYS.label,
-              TimePeriods.DAILY.label,
-              TimePeriods.WEEKLY.label,
-              TimePeriods.MONTHLY.label,
-            ].map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
+          child: DropdownButton<TimePeriods>(
+            value: selectedTimePeriod,
+            items: TimePeriods.values.map((TimePeriods timePeriod) {
+              return DropdownMenuItem<TimePeriods>(
+                value: timePeriod,
+                child: Text(timePeriod.label),
               );
             }).toList(),
-            onChanged: (String value) {
-              if (value == TimePeriods.DAILY.label)
+            onChanged: (TimePeriods value) {
+              if (value == TimePeriods.DAILY)
                 setDaysToRemind([true, true, true, true, true, true, true]);
-              else if (value == TimePeriods.WEEKLY.label) {
+              else if (value == TimePeriods.WEEKLY) {
                 var onlyThisDay = [
                   false,
                   false,
@@ -80,7 +74,7 @@ class DaysToRemindField extends StatelessWidget {
                 );
 
               setRepeatReminder(TimePeriods.values
-                  .firstWhere((timePeriod) => timePeriod.label == value));
+                  .firstWhere((timePeriod) => timePeriod == value));
             },
           ),
         ),
@@ -103,21 +97,40 @@ class DaysToRemindField extends StatelessWidget {
                             value: !daysToRemind[day.index],
                           );
 
-                          if (daysToRemind.every((bool day) => day))
-                            setRepeatReminder(TimePeriods.DAILY);
-                          else if (selectedTimePeriod == TimePeriods.DAILY &&
-                              daysToRemind.any((day) => !day))
-                            setRepeatReminder(TimePeriods.CHOOSE_DAYS);
-                          else if (selectedTimePeriod == TimePeriods.WEEKLY &&
-                              daysToRemind.where((day) => day).length > 1)
-                            setRepeatReminder(TimePeriods.CHOOSE_DAYS);
-                          else if (selectedTimePeriod ==
-                                  TimePeriods.CHOOSE_DAYS &&
-                              daysToRemind.where((day) => day).length == 1) {
-                            var weekDay = DateTime.now().weekday;
-                            weekDay = weekDay == 7 ? 0 : weekDay;
-                            if (daysToRemind[weekDay])
-                              setRepeatReminder(TimePeriods.WEEKLY);
+                          switch (selectedTimePeriod) {
+                            case TimePeriods.DAILY:
+                              if (daysToRemind
+                                  .any((bool isDayToRemind) => !isDayToRemind))
+                                setRepeatReminder(TimePeriods.CHOOSE_DAYS);
+                              break;
+
+                            case TimePeriods.WEEKLY:
+                              if (daysToRemind
+                                      .where(
+                                          (bool isDayToRemind) => isDayToRemind)
+                                      .length >
+                                  1) {
+                                int dayToNotRemindIndex = daysToRemind
+                                    .asMap()
+                                    .keys
+                                    .firstWhere((int index) =>
+                                        daysToRemind[index] &&
+                                        index != day.index);
+                                setDaysToRemind(
+                                  null,
+                                  index: dayToNotRemindIndex,
+                                  value: false,
+                                );
+                              }
+                              break;
+
+                            // case TimePeriods.CHOOSE_DAYS:
+                            //   break;
+
+                            default:
+                              if (daysToRemind
+                                  .every((bool isDayToRemind) => isDayToRemind))
+                                setRepeatReminder(TimePeriods.DAILY);
                           }
                         },
                         child: Container(
