@@ -81,8 +81,8 @@ class DaysToRemindField extends StatelessWidget {
             },
           ),
         ),
-        if (selectedTimePeriod == TimePeriods.NEVER)
-          Container()
+if (selectedTimePeriod == TimePeriods.NEVER ||
+            selectedTimePeriod == TimePeriods.MONTHLY)          Container()
         else
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0),
