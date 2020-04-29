@@ -45,6 +45,7 @@ class DaysToRemindField extends StatelessWidget {
         Text("Repetir"),
         Center(
           child: DropdownButton<TimePeriods>(
+            elevation: 6,
             value: selectedTimePeriod,
             items: TimePeriods.values.map((TimePeriods timePeriod) {
               return DropdownMenuItem<TimePeriods>(
@@ -53,6 +54,8 @@ class DaysToRemindField extends StatelessWidget {
               );
             }).toList(),
             onChanged: (TimePeriods value) {
+              if (isReadingTodo) setIsReadingTodoState(false);
+
               if (value == TimePeriods.DAILY)
                 setDaysToRemind([true, true, true, true, true, true, true]);
               else if (value == TimePeriods.WEEKLY) {
