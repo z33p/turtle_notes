@@ -41,7 +41,7 @@ class ReminderDateTimeField extends StatelessWidget {
               final time = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay.fromDateTime(currentValue ??
-                    DateFormat("dd-MM-yyyy hh:mm")
+                    DateFormat("dd-MM-yyyy HH:mm")
                         .parse(reminderDateTimeController.text)),
               );
               return DateTimeField.convert(time);
@@ -60,14 +60,14 @@ class ReminderDateTimeField extends StatelessWidget {
                   context: context,
                   firstDate: DateTime(1900),
                   initialDate: currentValue ??
-                      DateFormat("dd-MM-yyyy hh:mm")
+                      DateFormat("dd-MM-yyyy HH:mm")
                           .parse(reminderDateTimeController.text),
                   lastDate: DateTime(2100));
               if (date != null) {
                 final time = await showTimePicker(
                   context: context,
                   initialTime: TimeOfDay.fromDateTime(currentValue ??
-                      DateFormat("dd-MM-yyyy hh:mm")
+                      DateFormat("dd-MM-yyyy HH:mm")
                           .parse(reminderDateTimeController.text)),
                 );
                 return DateTimeField.combine(date, time);

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/screens/TodoFormScreen/TodoForm/NotificationFields/DaysToRemindField.dart';
 
@@ -12,13 +12,13 @@ class DaysToRemindView extends StatelessWidget {
     switch (todo.repeatReminder) {
       case TimePeriods.NEVER:
         return Text(
-            DateFormat("dd-MM-yyyy hh:mm").format(todo.reminderDateTime));
+            DateFormat("dd-MM-yyyy HH:mm").format(todo.reminderDateTime));
       case TimePeriods.DAILY:
         return Container(
           padding: EdgeInsets.only(top: 2.0),
           alignment: Alignment.centerRight,
           child: Text(
-            TimePeriods.DAILY.label,
+            TimePeriods.DAILY.label + " as " + DateFormat("HH:mm").format(todo.reminderDateTime),
           ),
         );
 

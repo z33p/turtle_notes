@@ -132,13 +132,13 @@ class _TodoListState extends State<TodoList> {
                     children: <Widget>[
                       Text(
                         "Criado: " +
-                            DateFormat("dd-MM-yyyy hh:mm")
+                            DateFormat("dd-MM-yyyy HH:mm")
                                 .format(widget.todo.createdAt),
                         style: TextStyle(fontSize: 11.0),
                       ),
                       Text(
                           "Atualizado: " +
-                              DateFormat("dd-MM-yyyy hh:mm")
+                              DateFormat("dd-MM-yyyy HH:mm")
                                   .format(widget.todo.updatedAt),
                           style: TextStyle(fontSize: 11.0)),
                     ],
