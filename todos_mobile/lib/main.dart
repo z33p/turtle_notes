@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: "Tarefas",
         theme: ThemeData(
-          primarySwatch: Colors.green,
+          primarySwatch: Colors.blue,
           inputDecorationTheme: InputDecorationTheme(
             contentPadding:
                 EdgeInsets.symmetric(vertical: 14.0, horizontal: 8.0),

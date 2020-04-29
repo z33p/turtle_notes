@@ -42,9 +42,9 @@ class DaysToRemindView extends StatelessWidget {
                   padding: EdgeInsets.all(6.0),
                   decoration: BoxDecoration(
                       color: todo.daysToRemind[day.key]
-                          ? Colors.green
+                          ? Colors.blue
                           : Colors.white,
-                      border: Border.all(color: Colors.green, width: 1.0)),
+                      border: Border.all(color: Colors.blue, width: 1.0)),
                   child: Text(
                     weekDaysLabels[day.key],
                     style: TextStyle(
