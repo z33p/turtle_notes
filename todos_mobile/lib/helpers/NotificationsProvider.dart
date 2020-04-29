@@ -72,6 +72,10 @@ class NotificationsProvider {
     await flutterLocalNotificationsPlugin.cancel(id);
   }
 
+  static Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
   static Future<void> showNotificationWithNoSound() async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         "silent channel id",
