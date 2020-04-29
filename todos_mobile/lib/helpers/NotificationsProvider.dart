@@ -43,6 +43,11 @@ class NotificationsProvider {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
   }
+  static Future<List<PendingNotificationRequest>> checkPendingNotificationRequests() async {
+    var pendingNotificationRequests =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    return pendingNotificationRequests;
+  }
 
   static Future<void> showNotification() async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -147,28 +152,5 @@ class NotificationsProvider {
         Day.values[todo.daysToRemind.indexWhere((day) => day)],
         time,
         platformChannelSpecifics);
-  }
-
-  static Future<void> checkPendingNotificationRequests(
-      BuildContext context) async {
-    var pendingNotificationRequests =
-        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(
-              "${pendingNotificationRequests.length} pending notification requests"),
-          actions: [
-            FlatButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

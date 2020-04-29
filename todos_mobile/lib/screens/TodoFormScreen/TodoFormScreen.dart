@@ -49,8 +49,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         TextEditingController(text: this.todo?.description ?? "");
     reminderDateTimeController = TextEditingController(
         text: this.todo?.reminderDateTime != null
-            ? DateFormat("dd-MM-yyyy hh:mm").format(this.todo.reminderDateTime)
-            : DateFormat("dd-MM-yyyy hh:mm").format(DateTime.now()));
+            ? DateFormat("dd-MM-yyyy HH:mm").format(this.todo.reminderDateTime)
+            : DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now()));
 
     selectedTimePeriod = TimePeriods.NEVER;
     daysToRemind = this.todo?.daysToRemind != null
@@ -127,7 +127,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
     DateTime reminderDateTime = selectedTimePeriod == TimePeriods.NEVER ||
             selectedTimePeriod == TimePeriods.NEVER
-        ? DateFormat("dd-MM-yyyy hh:mm").parse(reminderDateTimeController.text)
+        ? DateFormat("dd-MM-yyyy HH:mm").parse(reminderDateTimeController.text)
         : DateTime.parse(DateFormat("yyyy-MM-dd ")
                 .format(this.todo?.reminderDateTime ?? DateTime.now()) +
             reminderDateTimeController.text);
@@ -145,6 +145,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
       todo.id = this.todo.id;
       todo.createdAt = this.todo.createdAt;
       store.dispatch(updateTodoAction(todo));
+      await setNotification(todo);
     } else {
       Todo todoCreated = await TodosProvider.db.insert(todo);
 
@@ -155,12 +156,19 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   }
 
   Future<void> setNotification(Todo todo) async {
+    if (isUpdatingTodoState)
+      await NotificationsProvider.cancelNotification(todo.id);
+
     switch (todo.repeatReminder) {
       case TimePeriods.NEVER:
         return await NotificationsProvider.scheduleNotification(todo);
 
       case TimePeriods.DAILY:
         return await NotificationsProvider.scheduleNotificationDaily(todo);
+
+      case TimePeriods.WEEKLY:
+        return await NotificationsProvider.scheduleNotificationWeekly(todo);
+
       default:
         return;
     }
