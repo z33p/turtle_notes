@@ -52,12 +52,20 @@ class TodosProvider {
 
   Future close() async => (await database).close();
 
+  Future<Todo> find(int id) async {
+    final db = await database;
+
+    List<Map> todos = await db.query(tableName, where: "$columnId = $id");
+
+    return Todo.fromMap(todos[0]);
+  }
+
   Future<List<Todo>> findAll() async {
     final db = await database;
 
-    List<Map> maps = await db.query(tableName);
+    List<Map> todos = await db.query(tableName);
 
-    return maps.map((todo) => Todo.fromMap(todo)).toList();
+    return todos.map((todo) => Todo.fromMap(todo)).toList();
   }
 
   Future<Todo> insert(Todo todo) async {
