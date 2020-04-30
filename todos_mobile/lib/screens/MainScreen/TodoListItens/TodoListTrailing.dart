@@ -21,7 +21,6 @@ class TodoListTrailling extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Options>(
-      icon: Icon(Icons.menu),
       onSelected: (Options option) async {
         if (option == Options.DELETE) {
           showDialog(
