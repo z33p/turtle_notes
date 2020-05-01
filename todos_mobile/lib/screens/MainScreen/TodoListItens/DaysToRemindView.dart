@@ -9,7 +9,7 @@ class DaysToRemindView extends StatelessWidget {
   DaysToRemindView(this.todo);
 
   Widget chooseTimePeriodView() {
-    switch (todo.repeatReminder) {
+    switch (todo.timePeriods) {
       case TimePeriods.NEVER:
         return Text(
             DateFormat("dd-MM-yyyy HH:mm").format(todo.reminderDateTime));

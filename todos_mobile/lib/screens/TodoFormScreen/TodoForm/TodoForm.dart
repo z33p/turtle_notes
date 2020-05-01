@@ -12,7 +12,7 @@ class TodoForm extends StatelessWidget {
   final TextEditingController descriptionController;
   final TimePeriods selectedTimePeriod;
   final void Function(TimePeriods value) setRepeatReminder;
-  final TextEditingController reminderDateTimeController;
+  final TextEditingController timePeriodsController;
   final List<bool> daysToRemind;
   final bool isDoneController;
   final void Function(List<bool> days, {int index, bool value}) setDaysToRemind;
@@ -29,7 +29,7 @@ class TodoForm extends StatelessWidget {
     this.descriptionController,
     this.selectedTimePeriod,
     this.setRepeatReminder,
-    this.reminderDateTimeController,
+    this.timePeriodsController,
     this.daysToRemind,
     this.setDaysToRemind,
     this.isDoneController,
@@ -66,7 +66,7 @@ class TodoForm extends StatelessWidget {
             NotificationFields(
                 this.selectedTimePeriod,
                 this.setRepeatReminder,
-                this.reminderDateTimeController,
+                this.timePeriodsController,
                 this.daysToRemind,
                 this.setDaysToRemind,
                 isReadingTodo,

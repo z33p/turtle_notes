@@ -21,7 +21,7 @@ class Todo {
   String title;
   String description;
   bool isDone;
-  TimePeriods repeatReminder;
+  TimePeriods timePeriods;
   DateTime reminderDateTime;
   List<bool> daysToRemind = new List(7);
 
@@ -33,7 +33,7 @@ class Todo {
     this.title,
     this.description = "",
     this.isDone = false,
-    this.repeatReminder = TimePeriods.NEVER,
+    this.timePeriods = TimePeriods.NEVER,
     this.reminderDateTime,
     this.daysToRemind = const [false, false, false, false, false, false, false],
     this.createdAt,
@@ -46,8 +46,8 @@ class Todo {
       title: map[columnTitle],
       description: map[columnDescription],
       isDone: map[columnIsDone] == 1,
-      repeatReminder: TimePeriods.values
-          .firstWhere((value) => value.toString() == map[columnRepeatReminder]),
+      timePeriods: TimePeriods.values
+          .firstWhere((value) => value.toString() == map[columnTimePeriods]),
       reminderDateTime: DateTime.parse(map[columnReminderDateTime]),
       daysToRemind: map[columnDaysToRemind]
           .split(",")
@@ -63,7 +63,7 @@ class Todo {
       columnTitle: this.title,
       columnDescription: this.description,
       columnIsDone: this.isDone ? 1 : 0,
-      columnRepeatReminder: this.repeatReminder.toString(),
+      columnTimePeriods: this.timePeriods.toString(),
       columnReminderDateTime: this.reminderDateTime.toString(),
       columnDaysToRemind:
           this.daysToRemind.map((boolean) => boolean ? 1 : 0).join(","),

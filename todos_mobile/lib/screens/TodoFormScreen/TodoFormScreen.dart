@@ -33,11 +33,11 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   TextEditingController titleController;
   TextEditingController descriptionController;
   TimePeriods selectedTimePeriod;
-  TextEditingController reminderDateTimeController;
+  TextEditingController timePeriodsController;
   List<bool> daysToRemind;
   bool isDoneController;
-  bool isReadingTodoState;
-  bool isUpdatingTodoState;
+  bool isReadingTodo;
+  bool isUpdatingTodo;
 
   _TodoFormScreenState({this.todo});
 
@@ -47,7 +47,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
     titleController = TextEditingController(text: this.todo?.title ?? "");
     descriptionController =
         TextEditingController(text: this.todo?.description ?? "");
-    reminderDateTimeController = TextEditingController(
+    timePeriodsController = TextEditingController(
         text: this.todo?.reminderDateTime != null
             ? DateFormat("dd-MM-yyyy HH:mm").format(this.todo.reminderDateTime)
             : DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now()));
@@ -57,8 +57,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
         ? [...this.todo?.daysToRemind] // Copy
         : [false, false, false, false, false, false, false];
     isDoneController = this.todo?.isDone ?? false;
-    isReadingTodoState = widget.isReadingTodo;
-    isUpdatingTodoState = widget.isUpdatingTodo ?? false;
+    this.isReadingTodo = widget.isReadingTodo;
+    this.isUpdatingTodo = widget.isUpdatingTodo ?? false;
   }
 
   @protected
@@ -66,29 +66,29 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
-    reminderDateTimeController.dispose();
+    timePeriodsController.dispose();
     super.dispose();
   }
 
   void setRepeatReminder(TimePeriods value) {
-    /** It also changes reminderDateTimeController
+    /** It also changes timePeriodsController
      * to represent DateTime "dd-MM-yyyy HH:mm" for TimePeriods.NEVER
      * And to represent only time "HH:mm" to others
      */
     if (value != TimePeriods.NEVER && value != TimePeriods.MONTHLY) {
-      if (reminderDateTimeController.text.length != 5) {
-        reminderDateTimeController.text = DateFormat("HH:mm").format(
+      if (timePeriodsController.text.length != 5) {
+        timePeriodsController.text = DateFormat("HH:mm").format(
             DateFormat("dd-MM-yyyy HH:mm")
-                .parse(reminderDateTimeController.text));
+                .parse(timePeriodsController.text));
       }
       setState(() {
         return selectedTimePeriod = value;
       });
     } else {
-      if (reminderDateTimeController.text.length == 5)
-        reminderDateTimeController.text = DateFormat("dd-MM-yyyy ")
+      if (timePeriodsController.text.length == 5)
+        timePeriodsController.text = DateFormat("dd-MM-yyyy ")
                 .format(this.todo?.reminderDateTime ?? DateTime.now()) +
-            reminderDateTimeController.text;
+            timePeriodsController.text;
       setState(() {
         return selectedTimePeriod = value;
       });
@@ -108,8 +108,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
   void setIsReadingTodoState(bool isReadingTodo, {bool isUpdatingTodo}) {
     setState(() {
-      isReadingTodoState = isReadingTodo;
-      isUpdatingTodoState = isUpdatingTodo ?? !isReadingTodoState;
+      this.isReadingTodo = isReadingTodo;
+      this.isUpdatingTodo = isUpdatingTodo ?? !this.isReadingTodo;
     });
   }
 
@@ -127,21 +127,21 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
     DateTime reminderDateTime = selectedTimePeriod == TimePeriods.NEVER ||
             selectedTimePeriod == TimePeriods.NEVER
-        ? DateFormat("dd-MM-yyyy HH:mm").parse(reminderDateTimeController.text)
+        ? DateFormat("dd-MM-yyyy HH:mm").parse(timePeriodsController.text)
         : DateTime.parse(DateFormat("yyyy-MM-dd ")
                 .format(this.todo?.reminderDateTime ?? DateTime.now()) +
-            reminderDateTimeController.text);
+            timePeriodsController.text);
 
     Todo todo = Todo(
       title: titleController.text,
       description: descriptionController.text,
       isDone: isDoneController,
-      repeatReminder: whenRepeat,
+      timePeriods: whenRepeat,
       reminderDateTime: reminderDateTime,
       daysToRemind: daysToRemind,
     );
 
-    if (isUpdatingTodoState) {
+    if (this.isUpdatingTodo) {
       todo.id = this.todo.id;
       todo.createdAt = this.todo.createdAt;
       store.dispatch(updateTodoAction(todo));
@@ -156,10 +156,10 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   }
 
   Future<void> setNotification(Todo todo) async {
-    if (isUpdatingTodoState)
+    if (this.isUpdatingTodo)
       await NotificationsProvider.cancelNotification(todo.id);
 
-    switch (todo.repeatReminder) {
+    switch (todo.timePeriods) {
       case TimePeriods.NEVER:
         return await NotificationsProvider.scheduleNotification(todo);
 
@@ -178,9 +178,9 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: isReadingTodoState
+          title: this.isReadingTodo
               ? Text(widget.title)
-              : !isUpdatingTodoState
+              : !this.isUpdatingTodo
                   ? Text(widget.title)
                   : Row(
                       children: <Widget>[
@@ -194,20 +194,20 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
       floatingActionButton: FormScreenActionButton(
         _formKey,
         createOrEditTodo,
-        isUpdatingTodoState,
-        isReadingTodoState,
+        this.isUpdatingTodo,
+        this.isReadingTodo,
         setIsReadingTodoState,
         () => Navigator.pop(context),
       ),
       body: SingleChildScrollView(
         child: TodoForm(
           _formKey,
-          isReadingTodoState,
+          this.isReadingTodo,
           titleController,
           descriptionController,
           selectedTimePeriod,
           setRepeatReminder,
-          reminderDateTimeController,
+          timePeriodsController,
           daysToRemind,
           setDaysToRemind,
           isDoneController,

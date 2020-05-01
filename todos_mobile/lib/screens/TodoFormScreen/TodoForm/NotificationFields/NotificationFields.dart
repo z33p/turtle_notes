@@ -8,7 +8,7 @@ import 'DaysToRemindField.dart';
 class NotificationFields extends StatelessWidget {
   final TimePeriods selectedTimePeriod;
   final void Function(TimePeriods value) setRepeatReminder;
-  final TextEditingController reminderDateTimeController;
+  final TextEditingController timePeriodsController;
   final List<bool> daysToRemind;
   final void Function(List<bool> days, {int index, bool value}) setDaysToRemind;
   final bool isReadingTodo;
@@ -18,7 +18,7 @@ class NotificationFields extends StatelessWidget {
   NotificationFields(
     this.selectedTimePeriod,
     this.setRepeatReminder,
-    this.reminderDateTimeController,
+    this.timePeriodsController,
     this.daysToRemind,
     this.setDaysToRemind,
     this.isReadingTodo,
@@ -36,7 +36,7 @@ class NotificationFields extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: ReminderDateTimeField(
               this.selectedTimePeriod,
-              this.reminderDateTimeController,
+              this.timePeriodsController,
               isReadingTodo,
               setIsReadingTodoState,
             ),

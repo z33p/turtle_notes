@@ -7,7 +7,7 @@ final String columnId = "id";
 final String columnTitle = "title";
 final String columnDescription = "description";
 final String columnIsDone = "isDone";
-final String columnRepeatReminder = "repeatReminder";
+final String columnTimePeriods = "timePeriodsTo";
 final String columnReminderDateTime = "reminderDateTime";
 final String columnDaysToRemind = "daysToRemind";
 final String columnCreatedAt = "createdAt";
@@ -37,7 +37,7 @@ class TodosProvider {
             $columnTitle TEXT NOT NULL,
             $columnDescription TEXT,
             $columnIsDone INTEGER,
-            $columnRepeatReminder TEXT NOT NULL,
+            $columnTimePeriods TEXT NOT NULL,
             $columnReminderDateTime TEXT,
             $columnDaysToRemind TEXT,
             $columnCreatedAt TEXT,

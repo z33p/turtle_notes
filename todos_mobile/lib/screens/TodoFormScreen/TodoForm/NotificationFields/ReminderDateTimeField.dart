@@ -6,7 +6,7 @@ import 'package:todos_mobile/models/Todo.dart';
 
 class ReminderDateTimeField extends StatelessWidget {
   final TimePeriods selectedTimePeriod;
-  final TextEditingController reminderDateTimeController;
+  final TextEditingController timePeriodsController;
 
   final bool isReadingTodo;
   final void Function(bool isReadingTodo, {bool isUpdatingTodo})
@@ -14,7 +14,7 @@ class ReminderDateTimeField extends StatelessWidget {
 
   ReminderDateTimeField(
     this.selectedTimePeriod,
-    this.reminderDateTimeController,
+    this.timePeriodsController,
     this.isReadingTodo,
     this.setIsReadingTodoState,
   );
@@ -32,7 +32,7 @@ class ReminderDateTimeField extends StatelessWidget {
             selectedTimePeriod != TimePeriods.MONTHLY)
           DateTimeField(
             textAlign: TextAlign.center,
-            controller: reminderDateTimeController,
+            controller: timePeriodsController,
             format: DateFormat("HH:mm"),
             onChanged: (value) {
               if (isReadingTodo) setIsReadingTodoState(false);
@@ -42,7 +42,7 @@ class ReminderDateTimeField extends StatelessWidget {
                 context: context,
                 initialTime: TimeOfDay.fromDateTime(currentValue ??
                     DateFormat("dd-MM-yyyy HH:mm")
-                        .parse(reminderDateTimeController.text)),
+                        .parse(timePeriodsController.text)),
               );
               return DateTimeField.convert(time);
             },
@@ -50,7 +50,7 @@ class ReminderDateTimeField extends StatelessWidget {
         else
           DateTimeField(
             textAlign: TextAlign.center,
-            controller: reminderDateTimeController,
+            controller: timePeriodsController,
             format: DateFormat("dd-MM-yyyy HH:mm"),
             onChanged: (value) {
               if (isReadingTodo) setIsReadingTodoState(false);
@@ -61,14 +61,14 @@ class ReminderDateTimeField extends StatelessWidget {
                   firstDate: DateTime(1900),
                   initialDate: currentValue ??
                       DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(reminderDateTimeController.text),
+                          .parse(timePeriodsController.text),
                   lastDate: DateTime(2100));
               if (date != null) {
                 final time = await showTimePicker(
                   context: context,
                   initialTime: TimeOfDay.fromDateTime(currentValue ??
                       DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(reminderDateTimeController.text)),
+                          .parse(timePeriodsController.text)),
                 );
                 return DateTimeField.combine(date, time);
               } else {
