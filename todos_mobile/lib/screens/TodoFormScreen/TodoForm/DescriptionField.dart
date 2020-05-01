@@ -1,14 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class DescriptionField extends StatelessWidget {
-  final TextEditingController descriptionController;
-  final bool isReadingTodo;
-  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
-      setIsReadingTodoState;
+import 'TodoForm.dart';
 
-  DescriptionField(this.descriptionController, this.isReadingTodo,
-      this.setIsReadingTodoState);
+class DescriptionField extends StatelessWidget {
+  DescriptionField({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +17,21 @@ class DescriptionField extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.0),
             child: Text("Descrição"),
           ),
-          if (!isReadingTodo ?? true)
+          if (!todoForm.isReadingTodoController.value)
             TextFormField(
-              controller: descriptionController,
-              enabled: !isReadingTodo ?? true,
+              controller: todoForm.descriptionController,
+              enabled: !todoForm.isReadingTodoController.value,
               maxLines: 4,
             )
           else
             GestureDetector(
-              onTap: () => setIsReadingTodoState(false),
+              onTap: () => todoForm.setIsReadingTodo(false),
               child: Container(
                 color: Colors.transparent,
                 child: IgnorePointer(
                   child: TextFormField(
-                    controller: descriptionController,
-                    enabled: !isReadingTodo ?? true,
+                    controller: todoForm.descriptionController,
+                    enabled: !todoForm.isReadingTodoController.value,
                     maxLines: 4,
                   ),
                 ),

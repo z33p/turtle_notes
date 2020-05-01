@@ -4,20 +4,10 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:todos_mobile/models/Todo.dart';
 
+import '../TodoForm.dart';
+
 class ReminderDateTimeField extends StatelessWidget {
-  final TimePeriods selectedTimePeriod;
-  final TextEditingController timePeriodsController;
-
-  final bool isReadingTodo;
-  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
-      setIsReadingTodoState;
-
-  ReminderDateTimeField(
-    this.selectedTimePeriod,
-    this.timePeriodsController,
-    this.isReadingTodo,
-    this.setIsReadingTodoState,
-  );
+  ReminderDateTimeField({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +18,22 @@ class ReminderDateTimeField extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 8.0),
           child: Text("Horário"),
         ),
-        if (selectedTimePeriod != TimePeriods.NEVER &&
-            selectedTimePeriod != TimePeriods.MONTHLY)
+        if (todoForm.selectedTimePeriodController.value != TimePeriods.NEVER &&
+            todoForm.selectedTimePeriodController.value != TimePeriods.MONTHLY)
           DateTimeField(
             textAlign: TextAlign.center,
-            controller: timePeriodsController,
+            controller: todoForm.reminderDateTimeController,
             format: DateFormat("HH:mm"),
             onChanged: (value) {
-              if (isReadingTodo) setIsReadingTodoState(false);
+              if (todoForm.isReadingTodoController.value)
+                todoForm.setIsReadingTodo(false);
             },
             onShowPicker: (context, currentValue) async {
               final time = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay.fromDateTime(currentValue ??
                     DateFormat("dd-MM-yyyy HH:mm")
-                        .parse(timePeriodsController.text)),
+                        .parse(todoForm.reminderDateTimeController.text)),
               );
               return DateTimeField.convert(time);
             },
@@ -50,10 +41,11 @@ class ReminderDateTimeField extends StatelessWidget {
         else
           DateTimeField(
             textAlign: TextAlign.center,
-            controller: timePeriodsController,
+            controller: todoForm.reminderDateTimeController,
             format: DateFormat("dd-MM-yyyy HH:mm"),
             onChanged: (value) {
-              if (isReadingTodo) setIsReadingTodoState(false);
+              if (todoForm.isReadingTodoController.value)
+                todoForm.setIsReadingTodo(false);
             },
             onShowPicker: (context, currentValue) async {
               final date = await showDatePicker(
@@ -61,14 +53,14 @@ class ReminderDateTimeField extends StatelessWidget {
                   firstDate: DateTime(1900),
                   initialDate: currentValue ??
                       DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(timePeriodsController.text),
+                          .parse(todoForm.reminderDateTimeController.text),
                   lastDate: DateTime(2100));
               if (date != null) {
                 final time = await showTimePicker(
                   context: context,
                   initialTime: TimeOfDay.fromDateTime(currentValue ??
                       DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(timePeriodsController.text)),
+                          .parse(todoForm.reminderDateTimeController.text)),
                 );
                 return DateTimeField.combine(date, time);
               } else {

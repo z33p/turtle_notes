@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
-class TitleField extends StatelessWidget {
-  final TextEditingController titleController;
-  final bool isReadingTodo;
-  final void Function(bool isReadingTodo, {bool isUpdatingTodo})
-      setIsReadingTodoState;
+import 'TodoForm.dart';
 
-  TitleField(
-      this.titleController, this.isReadingTodo, this.setIsReadingTodoState);
+class TitleField extends StatelessWidget {
+  TitleField({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +16,11 @@ class TitleField extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.0),
             child: Text("Título"),
           ),
-          if (!isReadingTodo ?? true)
+          if (!todoForm.isReadingTodoController.value)
             TextFormField(
               textAlign: TextAlign.center,
-              controller: titleController,
-              enabled: !isReadingTodo ?? true,
+              controller: todoForm.titleController,
+              enabled: !todoForm.isReadingTodoController.value,
               maxLines: 1,
               validator: (value) {
                 if (value.isEmpty) {
@@ -35,14 +31,14 @@ class TitleField extends StatelessWidget {
             )
           else
             GestureDetector(
-              onTap: () => setIsReadingTodoState(false),
+              onTap: () => todoForm.setIsReadingTodo(false),
               child: Container(
                 color: Colors.transparent,
                 child: IgnorePointer(
                   child: TextFormField(
                     textAlign: TextAlign.center,
-                    controller: titleController,
-                    enabled: !isReadingTodo ?? true,
+                    controller: todoForm.titleController,
+                    enabled: !todoForm.isReadingTodoController.value,
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Por favor, insira um título";
