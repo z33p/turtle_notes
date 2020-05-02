@@ -11,15 +11,18 @@ class IsDoneField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text("Completo"),
-            Checkbox(
-              value: value,
-              onChanged: (bool value) {
-                if (todoForm.isReadingTodoController.value)
-                  todoForm.setIsReadingTodo(false);
+            ValueListenableBuilder<bool>(
+                valueListenable: todoForm.isReadingTodoController,
+                builder: (BuildContext context, bool isReadingTodo, _) {
+                  return Checkbox(
+                    value: value,
+                    onChanged: (bool value) {
+                      if (isReadingTodo) todoForm.setIsReadingTodo(false);
 
-                todoForm.isDoneController.value = value;
-              },
-            ),
+                      todoForm.isDoneController.value = value;
+                    },
+                  );
+                }),
           ],
         );
       },

@@ -103,8 +103,9 @@ class TodoForm {
       isDone: isDoneController.value,
       timePeriods: whenRepeat,
       reminderDateTime: reminderDateTime,
-      daysToRemind:
-          daysToRemindController.map((ValueNotifier<bool> day) => day.value),
+      daysToRemind: daysToRemindController
+          .map<bool>((ValueNotifier<bool> day) => day.value)
+          .toList(),
     );
 
     if (isUpdatingTodoController.value) {
@@ -122,6 +123,8 @@ class TodoForm {
   }
 
   Future<void> setNotification(Todo todo) async {
+    if (todo.reminderDateTime.difference(DateTime.now()).isNegative) return;
+
     if (isUpdatingTodoController.value)
       await NotificationsProvider.cancelNotification(todo.id);
 

@@ -24,7 +24,8 @@ class TodoFormScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TodoFormScreenState createState() => _TodoFormScreenState(todo: todo);
+  _TodoFormScreenState createState() => _TodoFormScreenState(
+      todo: todo, isReadingTodo: isReadingTodo, isUpdatingTodo: isUpdatingTodo);
 }
 
 class _TodoFormScreenState extends State<TodoFormScreen> {
@@ -39,7 +40,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   bool isReadingTodo;
   bool isUpdatingTodo;
 
-  _TodoFormScreenState({this.todo}) {
+  _TodoFormScreenState({this.todo, this.isReadingTodo, this.isUpdatingTodo}) {
     if (this.todo != null) {
       todoForm.titleController.text = this.todo.title;
       todoForm.descriptionController.text = this.todo.description;
@@ -48,8 +49,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
       todoForm.daysToRemindController.setAll(0,
           this.todo.daysToRemind.map((bool day) => ValueNotifier<bool>(day)));
       todoForm.isDoneController.value = this.todo.isDone;
-      todoForm.isReadingTodoController.value = widget.isReadingTodo;
-      todoForm.isUpdatingTodoController.value = widget.isUpdatingTodo ?? false;
+      todoForm.isReadingTodoController.value = isReadingTodo;
     }
     todoForm.reminderDateTimeController.text =
         DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());

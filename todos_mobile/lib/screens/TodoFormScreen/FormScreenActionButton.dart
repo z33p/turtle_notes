@@ -26,35 +26,37 @@ class _FormScreenActionButtonState extends State<FormScreenActionButton> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      child: Icon(todoForm.isReadingTodoController.value
-          ? Icons.edit
-          : saveOrArrowIcon),
-      onPressed: () async {
-        if (todoForm.isReadingTodoController.value) {
-          todoForm.setIsReadingTodo(false);
-          return;
-        }
+    return ValueListenableBuilder<bool>(
+        valueListenable: todoForm.isReadingTodoController,
+        builder: (BuildContext context, bool isReadingTodo, _) {
+          return FloatingActionButton(
+            child: Icon(isReadingTodo ? Icons.edit : saveOrArrowIcon),
+            onPressed: () async {
+              if (isReadingTodo) {
+                todoForm.setIsReadingTodo(false);
+                return;
+              }
 
-        if (todoForm.formKey.currentState.validate()) {
-          await todoForm.createOrEditTodo();
-          int snackBarDuration = 1;
-          Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(seconds: snackBarDuration),
-              content: Text(
-                todoForm.isUpdatingTodoController.value
-                    ? "Tarefa editada!"
-                    : "Tarefa criada!",
-              )));
+              if (todoForm.formKey.currentState.validate()) {
+                await todoForm.createOrEditTodo();
+                int snackBarDuration = 1;
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    duration: Duration(seconds: snackBarDuration),
+                    content: Text(
+                      todoForm.isUpdatingTodoController.value
+                          ? "Tarefa editada!"
+                          : "Tarefa criada!",
+                    )));
 
-          await Future.delayed(
-            Duration(seconds: snackBarDuration),
-            itWasBeingRead
-                ? () => todoForm.setIsReadingTodo(true)
-                : widget.popNavigator,
+                await Future.delayed(
+                  Duration(seconds: snackBarDuration),
+                  itWasBeingRead
+                      ? () => todoForm.setIsReadingTodo(true)
+                      : widget.popNavigator,
+                );
+              }
+            },
           );
-        }
-      },
-    );
+        });
   }
 }
