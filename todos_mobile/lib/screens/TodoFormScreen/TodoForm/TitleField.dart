@@ -20,7 +20,7 @@ class TitleField extends StatelessWidget {
                   child: Text("Título"),
                 ),
                 GestureDetector(
-                  onTap: () => todoForm.setIsReadingTodo(false),
+                  onTap: () => todoForm.isReadingTodo = true,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(

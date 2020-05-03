@@ -21,7 +21,7 @@ class DescriptionField extends StatelessWidget {
                   child: Text("Descrição"),
                 ),
                 GestureDetector(
-                  onTap: () => todoForm.setIsReadingTodo(false),
+                  onTap: () => todoForm.isReadingTodo = true,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(

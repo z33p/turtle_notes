@@ -19,9 +19,8 @@ class _FormScreenActionButtonState extends State<FormScreenActionButton> {
   void initState() {
     super.initState();
     itWasBeingRead = todoForm.isReadingTodoController.value;
-    saveOrArrowIcon = todoForm.isReadingTodoController.value
-        ? Icons.save
-        : Icons.arrow_forward;
+    saveOrArrowIcon =
+        todoForm.isReadingTodoController.value ? Icons.save : Icons.send;
   }
 
   @override
@@ -30,10 +29,11 @@ class _FormScreenActionButtonState extends State<FormScreenActionButton> {
         valueListenable: todoForm.isReadingTodoController,
         builder: (BuildContext context, bool isReadingTodo, _) {
           return FloatingActionButton(
+            key: Key("createOrEditTodoButton"),
             child: Icon(isReadingTodo ? Icons.edit : saveOrArrowIcon),
             onPressed: () async {
               if (isReadingTodo) {
-                todoForm.setIsReadingTodo(false);
+                todoForm.isReadingTodo = true;
                 return;
               }
 
@@ -46,12 +46,13 @@ class _FormScreenActionButtonState extends State<FormScreenActionButton> {
                       todoForm.isUpdatingTodoController.value
                           ? "Tarefa editada!"
                           : "Tarefa criada!",
+                      key: Key("textSnackBar"),
                     )));
 
                 await Future.delayed(
                   Duration(seconds: snackBarDuration),
                   itWasBeingRead
-                      ? () => todoForm.setIsReadingTodo(true)
+                      ? () => todoForm.isReadingTodo = false
                       : widget.popNavigator,
                 );
               }

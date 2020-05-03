@@ -27,7 +27,7 @@ class TimePeriodsField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<TimePeriods>(
-        valueListenable: todoForm.selectedTimePeriodController,
+        valueListenable: todoForm.selectedTimePeriod,
         builder: (BuildContext context, TimePeriods selectedTimePeriod, _) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -36,7 +36,7 @@ class TimePeriodsField extends StatelessWidget {
               Center(
                 child: DropdownButton<TimePeriods>(
                   elevation: 6,
-                  value: todoForm.selectedTimePeriodController.value,
+                  value: todoForm.selectedTimePeriod.value,
                   items: TimePeriods.values.map((TimePeriods timePeriod) {
                     return DropdownMenuItem<TimePeriods>(
                       value: timePeriod,
@@ -45,7 +45,7 @@ class TimePeriodsField extends StatelessWidget {
                   }).toList(),
                   onChanged: (TimePeriods value) {
                     if (todoForm.isReadingTodoController.value)
-                      todoForm.setIsReadingTodo(false);
+                      todoForm.isReadingTodo = true;
 
                     if (value == TimePeriods.DAILY)
                       todoForm.daysToRemindController.setAll(
@@ -68,8 +68,10 @@ class TimePeriodsField extends StatelessWidget {
                       }
                       todoForm.daysToRemindController.setAll(0, onlyThisDay);
                     }
-                    todoForm.setRepeatReminder(TimePeriods.values
-                        .firstWhere((timePeriod) => timePeriod == value));
+                    todoForm.selectedTimePeriod = ValueNotifier(
+                      TimePeriods.values
+                          .firstWhere((timePeriod) => timePeriod == value),
+                    );
                   },
                 ),
               ),

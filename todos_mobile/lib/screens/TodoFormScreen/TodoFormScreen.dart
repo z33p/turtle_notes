@@ -42,12 +42,8 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
 
   _TodoFormScreenState({this.todo, this.isReadingTodo, this.isUpdatingTodo}) {
     if (this.todo != null) {
-      todoForm.titleController.text = this.todo.title;
-      todoForm.descriptionController.text = this.todo.description;
-      todoForm.reminderDateTimeController.text =
-          DateFormat("dd-MM-yyyy HH:mm").format(this.todo.reminderDateTime);
-      todoForm.daysToRemindController.setAll(0,
-          this.todo.daysToRemind.map((bool day) => ValueNotifier<bool>(day)));
+      todoForm.todo = this.todo;
+
       todoForm.isDoneController.value = this.todo.isDone;
       todoForm.isReadingTodoController.value = isReadingTodo;
     }
@@ -66,22 +62,27 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: todoForm.isReadingTodoController.value
-              ? Text(widget.title)
-              : !todoForm.isUpdatingTodoController.value
-                  ? Text(
-                      widget.title,
-                      key: Key("appBarTitle"),
-                    )
-                  : Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Icon(Icons.edit),
-                        ),
-                        Text(widget.title)
-                      ],
-                    )),
+        title: ValueListenableBuilder<bool>(
+            valueListenable: todoForm.isUpdatingTodoController,
+            builder: (BuildContext context, bool isUpdatingTodo, _) {
+              return todoForm.isReadingTodoController.value
+                  ? Text(widget.title)
+                  : !isUpdatingTodo
+                      ? Text(
+                          widget.title,
+                          key: Key("appBarTitle"),
+                        )
+                      : Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(Icons.edit),
+                            ),
+                            Text(widget.title)
+                          ],
+                        );
+            }),
+      ),
       floatingActionButton: FormScreenActionButton(
         () => Navigator.pop(context),
       ),

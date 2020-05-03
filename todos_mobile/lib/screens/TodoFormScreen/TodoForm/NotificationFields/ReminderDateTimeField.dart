@@ -21,12 +21,10 @@ class ReminderDateTimeField extends StatelessWidget {
         ValueListenableBuilder<bool>(
             valueListenable: todoForm.isReadingTodoController,
             builder: (BuildContext context, bool isReadingTodo, _) {
-              if (todoForm.selectedTimePeriodController.value !=
-                      TimePeriods.NEVER &&
-                  todoForm.selectedTimePeriodController.value !=
-                      TimePeriods.MONTHLY)
+              if (todoForm.selectedTimePeriod.value != TimePeriods.NEVER &&
+                  todoForm.selectedTimePeriod.value != TimePeriods.MONTHLY)
                 return GestureDetector(
-                  onTap: () => todoForm.setIsReadingTodo(false),
+                  onTap: () => todoForm.isReadingTodo = true,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(
@@ -38,7 +36,7 @@ class ReminderDateTimeField extends StatelessWidget {
                         format: DateFormat("HH:mm"),
                         onChanged: (value) {
                           if (todoForm.isReadingTodoController.value)
-                            todoForm.setIsReadingTodo(false);
+                            todoForm.isReadingTodo = true;
                         },
                         onShowPicker: (context, currentValue) async {
                           final time = await showTimePicker(
@@ -55,7 +53,7 @@ class ReminderDateTimeField extends StatelessWidget {
                 );
               else
                 return GestureDetector(
-                  onTap: () => todoForm.setIsReadingTodo(false),
+                  onTap: () => todoForm.isReadingTodo = true,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(
@@ -67,7 +65,7 @@ class ReminderDateTimeField extends StatelessWidget {
                         format: DateFormat("dd-MM-yyyy HH:mm"),
                         onChanged: (value) {
                           if (todoForm.isReadingTodoController.value)
-                            todoForm.setIsReadingTodo(false);
+                            todoForm.isReadingTodo = true;
                         },
                         onShowPicker: (context, currentValue) async {
                           final date = await showDatePicker(

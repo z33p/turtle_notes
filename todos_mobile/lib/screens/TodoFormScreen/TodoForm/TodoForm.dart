@@ -7,63 +7,101 @@ import 'package:todos_mobile/helpers/TodosProvider.dart';
 import 'package:todos_mobile/store.dart';
 
 class TodoForm {
-  Todo todo;
+  Todo _todo;
   GlobalKey<FormState> formKey;
   TextEditingController titleController = TextEditingController(text: "");
   TextEditingController descriptionController = TextEditingController(text: "");
   TextEditingController reminderDateTimeController =
       TextEditingController(text: "");
-  ValueNotifier<TimePeriods> selectedTimePeriodController =
+  ValueNotifier<TimePeriods> _selectedTimePeriodController =
       ValueNotifier(TimePeriods.NEVER);
   List<ValueNotifier<bool>> daysToRemindController = new List(7);
   ValueNotifier<bool> isDoneController = ValueNotifier<bool>(false);
-  ValueNotifier<bool> isReadingTodoController = ValueNotifier<bool>(false);
+  ValueNotifier<bool> _isReadingTodoController = ValueNotifier<bool>(false);
   ValueNotifier<bool> isUpdatingTodoController = ValueNotifier<bool>(false);
 
   TodoForm() {
-    this.todo = todo ?? Todo();
+    // this.todo = todo ?? Todo();
     this.formKey = formKey ?? GlobalKey<FormState>();
     reminderDateTimeController.text =
         DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());
     this.daysToRemindController.fillRange(0, 7, ValueNotifier<bool>(false));
   }
 
-  void setIsReadingTodo(bool isReadingTodo, {bool isUpdatingTodo}) {
-    isReadingTodoController.value = isReadingTodo;
-    isUpdatingTodoController.value =
-        isUpdatingTodo ?? !isUpdatingTodoController.value;
+  set todo(Todo todo) {
+    this._todo = todo;
+    todoForm.titleController.text = this._todo.title;
+    todoForm.descriptionController.text = this._todo.description;
+    todoForm.reminderDateTimeController.text =
+        DateFormat("dd-MM-yyyy HH:mm").format(this._todo.reminderDateTime);
+    todoForm.daysToRemindController.setAll(
+        0, this._todo.daysToRemind.map((bool day) => ValueNotifier<bool>(day)));
+  }
+
+  ValueNotifier<bool> get isReadingTodoController => _isReadingTodoController;
+
+  set isReadingTodo(bool isReadingTodo) {
+    _isReadingTodoController.value = isReadingTodo;
+    isUpdatingTodoController.value = !isUpdatingTodoController.value;
   }
 
   void setDaysToRemind({
     int index,
     bool value,
   }) {
+    switch (todoForm.selectedTimePeriod.value) {
+      case TimePeriods.DAILY:
+        if (todoForm.daysToRemindController
+            .any((ValueNotifier<bool> isDayToRemind) => !isDayToRemind.value))
+          todoForm.selectedTimePeriod = ValueNotifier(TimePeriods.CHOOSE_DAYS);
+        break;
+
+      case TimePeriods.WEEKLY:
+        int currentDayToRemindIndex = todoForm.daysToRemindController
+            .indexWhere((ValueNotifier<bool> dayToRemind) => dayToRemind.value);
+
+        if (currentDayToRemindIndex != -1)
+          this.daysToRemindController[currentDayToRemindIndex].value = false;
+
+        break;
+
+      // case TimePeriods.CHOOSE_DAYS:
+      //   break;
+
+      default:
+        if (todoForm.daysToRemindController
+            .every((ValueNotifier<bool> isDayToRemind) => isDayToRemind.value))
+          todoForm.selectedTimePeriod = ValueNotifier(TimePeriods.DAILY);
+    }
+
     this.daysToRemindController[index].value = value;
   }
 
-  void setRepeatReminder(TimePeriods value) {
-    /** It also changes this.reminderDateTimeController
-     * to represent DateTime "dd-MM-yyyy HH:mm" for TimePeriods.NEVER
-     * And to represent only time "HH:mm" to others
+  ValueNotifier<TimePeriods> get selectedTimePeriod =>
+      _selectedTimePeriodController;
+
+  set selectedTimePeriod(ValueNotifier<TimePeriods> valueController) {
+    /** It also changes [this.reminderDateTimeController]
+     * to represent [DateFormat("dd-MM-yyyy HH:mm")] for [TimePeriods.NEVER]
+     * And to represent only time [DateFormat("HH:mm")] to others
      */
-    if (value != TimePeriods.NEVER && value != TimePeriods.MONTHLY) {
+    if (valueController.value != TimePeriods.NEVER &&
+        valueController.value != TimePeriods.MONTHLY) {
       if (this.reminderDateTimeController.text.length != 5) {
         this.reminderDateTimeController.text = DateFormat("HH:mm").format(
             DateFormat("dd-MM-yyyy HH:mm")
                 .parse(this.reminderDateTimeController.text));
       }
-      this.selectedTimePeriodController.value = value;
-    } else {
-      if (this.reminderDateTimeController.text.length == 5)
-        this.reminderDateTimeController.text = DateFormat("dd-MM-yyyy ")
-                .format(this.todo?.reminderDateTime ?? DateTime.now()) +
-            this.reminderDateTimeController.text;
-      this.selectedTimePeriodController.value = value;
-    }
+      this._selectedTimePeriodController.value = valueController.value;
+    } else if (this.reminderDateTimeController.text.length == 5)
+      this.reminderDateTimeController.text = DateFormat("dd-MM-yyyy ")
+              .format(this._todo?.reminderDateTime ?? DateTime.now()) +
+          this.reminderDateTimeController.text;
+    this._selectedTimePeriodController.value = valueController.value;
   }
 
   void clear() {
-    this.todo = Todo();
+    this._todo = Todo();
     this.formKey = GlobalKey<FormState>();
 
     this.titleController.text = "";
@@ -72,31 +110,36 @@ class TodoForm {
     this.daysToRemindController.fillRange(0, 7, ValueNotifier<bool>(false));
 
     this.isDoneController.value = false;
-    this.isReadingTodoController.value = false;
+    this._isReadingTodoController.value = false;
     this.isUpdatingTodoController.value = false;
 
-    this.selectedTimePeriodController.value = TimePeriods.NEVER;
+    this._selectedTimePeriodController.value = TimePeriods.NEVER;
   }
 
   Todo extractTodoFromFields() {
-    var whenRepeat;
     int amountOfDaysToRemind = daysToRemindController
         .where((ValueNotifier<bool> isDayToRemind) => isDayToRemind.value)
         .length;
 
-    // If none day is to remind set reapeatReminder as never
-    if (amountOfDaysToRemind == 0) {
-      whenRepeat = TimePeriods.NEVER;
-    } else
-      whenRepeat = selectedTimePeriodController.value;
+    TimePeriods whenRepeat;
 
-    DateTime reminderDateTime = selectedTimePeriodController.value ==
-                TimePeriods.NEVER ||
-            selectedTimePeriodController.value == TimePeriods.NEVER
-        ? DateFormat("dd-MM-yyyy HH:mm").parse(reminderDateTimeController.text)
-        : DateTime.parse(DateFormat("yyyy-MM-dd ")
-                .format(this.todo?.reminderDateTime ?? DateTime.now()) +
-            reminderDateTimeController.text);
+    // If none day is to remind set reapeatReminder as never
+    if (amountOfDaysToRemind == 0)
+      whenRepeat = TimePeriods.NEVER;
+    else
+      whenRepeat = _selectedTimePeriodController.value;
+
+    DateTime reminderDateTime;
+
+    if (_selectedTimePeriodController.value == TimePeriods.NEVER ||
+        _selectedTimePeriodController.value == TimePeriods.MONTHLY)
+      reminderDateTime =
+          DateFormat("dd-MM-yyyy HH:mm").parse(reminderDateTimeController.text);
+    else
+      reminderDateTime = DateTime.parse(DateFormat("yyyy-MM-dd ")
+              .format(this._todo?.reminderDateTime ?? DateTime.now()) +
+          reminderDateTimeController.text);
+
     return Todo(
       title: titleController.text,
       description: descriptionController.text,
@@ -113,8 +156,8 @@ class TodoForm {
     var todoFromFields = extractTodoFromFields();
 
     if (isUpdatingTodoController.value) {
-      todoFromFields.id = this.todo.id;
-      todoFromFields.createdAt = this.todo.createdAt;
+      todoFromFields.id = this._todo.id;
+      todoFromFields.createdAt = this._todo.createdAt;
       store.dispatch(updateTodoAction(todoFromFields));
       await setNotification(todoFromFields);
     } else {
