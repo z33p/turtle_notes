@@ -9,7 +9,7 @@ import 'package:todos_mobile/store.dart';
 class TodoForm {
   Todo todo;
   GlobalKey<FormState> formKey;
-  TextEditingController titleController = TextEditingController(text: "Hello");
+  TextEditingController titleController = TextEditingController(text: "");
   TextEditingController descriptionController = TextEditingController(text: "");
   TextEditingController reminderDateTimeController =
       TextEditingController(text: "");
@@ -23,6 +23,8 @@ class TodoForm {
   TodoForm() {
     this.todo = todo ?? Todo();
     this.formKey = formKey ?? GlobalKey<FormState>();
+    reminderDateTimeController.text =
+        DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());
     this.daysToRemindController.fillRange(0, 7, ValueNotifier<bool>(false));
   }
 
@@ -76,17 +78,16 @@ class TodoForm {
     this.selectedTimePeriodController.value = TimePeriods.NEVER;
   }
 
-  Future<void> createOrEditTodo() async {
+  Todo extractTodoFromFields() {
     var whenRepeat;
     int amountOfDaysToRemind = daysToRemindController
         .where((ValueNotifier<bool> isDayToRemind) => isDayToRemind.value)
         .length;
 
     // If none day is to remind set reapeatReminder as never
-    if (amountOfDaysToRemind == 0)
+    if (amountOfDaysToRemind == 0) {
       whenRepeat = TimePeriods.NEVER;
-    // Default
-    else
+    } else
       whenRepeat = selectedTimePeriodController.value;
 
     DateTime reminderDateTime = selectedTimePeriodController.value ==
@@ -96,8 +97,7 @@ class TodoForm {
         : DateTime.parse(DateFormat("yyyy-MM-dd ")
                 .format(this.todo?.reminderDateTime ?? DateTime.now()) +
             reminderDateTimeController.text);
-
-    Todo todo = Todo(
+    return Todo(
       title: titleController.text,
       description: descriptionController.text,
       isDone: isDoneController.value,
@@ -107,14 +107,18 @@ class TodoForm {
           .map<bool>((ValueNotifier<bool> day) => day.value)
           .toList(),
     );
+  }
+
+  Future<void> createOrEditTodo() async {
+    var todoFromFields = extractTodoFromFields();
 
     if (isUpdatingTodoController.value) {
-      todo.id = this.todo.id;
-      todo.createdAt = this.todo.createdAt;
-      store.dispatch(updateTodoAction(todo));
-      await setNotification(todo);
+      todoFromFields.id = this.todo.id;
+      todoFromFields.createdAt = this.todo.createdAt;
+      store.dispatch(updateTodoAction(todoFromFields));
+      await setNotification(todoFromFields);
     } else {
-      Todo todoCreated = await TodosProvider.db.insert(todo);
+      Todo todoCreated = await TodosProvider.db.insert(todoFromFields);
 
       await setNotification(todoCreated);
 

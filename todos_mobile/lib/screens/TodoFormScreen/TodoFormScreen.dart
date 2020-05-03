@@ -69,7 +69,10 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
           title: todoForm.isReadingTodoController.value
               ? Text(widget.title)
               : !todoForm.isUpdatingTodoController.value
-                  ? Text(widget.title)
+                  ? Text(
+                      widget.title,
+                      key: Key("appBarTitle"),
+                    )
                   : Row(
                       children: <Widget>[
                         Padding(
