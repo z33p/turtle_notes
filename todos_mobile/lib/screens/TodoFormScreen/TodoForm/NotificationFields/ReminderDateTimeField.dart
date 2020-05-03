@@ -18,56 +18,84 @@ class ReminderDateTimeField extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 8.0),
           child: Text("Horário"),
         ),
-        if (todoForm.selectedTimePeriodController.value != TimePeriods.NEVER &&
-            todoForm.selectedTimePeriodController.value != TimePeriods.MONTHLY)
-          DateTimeField(
-            textAlign: TextAlign.center,
-            controller: todoForm.reminderDateTimeController,
-            format: DateFormat("HH:mm"),
-            onChanged: (value) {
-              if (todoForm.isReadingTodoController.value)
-                todoForm.setIsReadingTodo(false);
-            },
-            onShowPicker: (context, currentValue) async {
-              final time = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.fromDateTime(currentValue ??
-                    DateFormat("dd-MM-yyyy HH:mm")
-                        .parse(todoForm.reminderDateTimeController.text)),
-              );
-              return DateTimeField.convert(time);
-            },
-          )
-        else
-          DateTimeField(
-            textAlign: TextAlign.center,
-            controller: todoForm.reminderDateTimeController,
-            format: DateFormat("dd-MM-yyyy HH:mm"),
-            onChanged: (value) {
-              if (todoForm.isReadingTodoController.value)
-                todoForm.setIsReadingTodo(false);
-            },
-            onShowPicker: (context, currentValue) async {
-              final date = await showDatePicker(
-                  context: context,
-                  firstDate: DateTime(1900),
-                  initialDate: currentValue ??
-                      DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(todoForm.reminderDateTimeController.text),
-                  lastDate: DateTime(2100));
-              if (date != null) {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.fromDateTime(currentValue ??
-                      DateFormat("dd-MM-yyyy HH:mm")
-                          .parse(todoForm.reminderDateTimeController.text)),
+        ValueListenableBuilder<bool>(
+            valueListenable: todoForm.isReadingTodoController,
+            builder: (BuildContext context, bool isReadingTodo, _) {
+              if (todoForm.selectedTimePeriodController.value !=
+                      TimePeriods.NEVER &&
+                  todoForm.selectedTimePeriodController.value !=
+                      TimePeriods.MONTHLY)
+                return GestureDetector(
+                  onTap: () => todoForm.setIsReadingTodo(false),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IgnorePointer(
+                      ignoring: isReadingTodo,
+                      child: DateTimeField(
+                        controller: todoForm.reminderDateTimeController,
+                        enabled: !isReadingTodo,
+                        textAlign: TextAlign.center,
+                        format: DateFormat("HH:mm"),
+                        onChanged: (value) {
+                          if (todoForm.isReadingTodoController.value)
+                            todoForm.setIsReadingTodo(false);
+                        },
+                        onShowPicker: (context, currentValue) async {
+                          final time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(currentValue ??
+                                DateFormat("dd-MM-yyyy HH:mm").parse(
+                                    todoForm.reminderDateTimeController.text)),
+                          );
+                          return DateTimeField.convert(time);
+                        },
+                      ),
+                    ),
+                  ),
                 );
-                return DateTimeField.combine(date, time);
-              } else {
-                return currentValue;
-              }
-            },
-          ),
+              else
+                return GestureDetector(
+                  onTap: () => todoForm.setIsReadingTodo(false),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IgnorePointer(
+                      ignoring: isReadingTodo,
+                      child: DateTimeField(
+                        controller: todoForm.reminderDateTimeController,
+                        enabled: !isReadingTodo,
+                        textAlign: TextAlign.center,
+                        format: DateFormat("dd-MM-yyyy HH:mm"),
+                        onChanged: (value) {
+                          if (todoForm.isReadingTodoController.value)
+                            todoForm.setIsReadingTodo(false);
+                        },
+                        onShowPicker: (context, currentValue) async {
+                          final date = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1900),
+                              initialDate: currentValue ??
+                                  DateFormat("dd-MM-yyyy HH:mm").parse(
+                                      todoForm.reminderDateTimeController.text),
+                              lastDate: DateTime(2100));
+                          if (date != null) {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.fromDateTime(
+                                  currentValue ??
+                                      DateFormat("dd-MM-yyyy HH:mm").parse(
+                                          todoForm.reminderDateTimeController
+                                              .text)),
+                            );
+                            return DateTimeField.combine(date, time);
+                          } else {
+                            return currentValue;
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                );
+            })
       ],
     );
   }

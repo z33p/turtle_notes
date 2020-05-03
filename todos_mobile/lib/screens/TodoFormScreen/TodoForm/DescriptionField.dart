@@ -20,26 +20,21 @@ class DescriptionField extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: 8.0),
                   child: Text("Descrição"),
                 ),
-                if (!isReadingTodo)
-                  TextFormField(
-                    controller: todoForm.descriptionController,
-                    enabled: !isReadingTodo,
-                    maxLines: 4,
-                  )
-                else
-                  GestureDetector(
-                    onTap: () => todoForm.setIsReadingTodo(false),
-                    child: Container(
-                      color: Colors.transparent,
-                      child: IgnorePointer(
-                        child: TextFormField(
-                          controller: todoForm.descriptionController,
-                          enabled: !isReadingTodo,
-                          maxLines: 4,
-                        ),
+                GestureDetector(
+                  onTap: () => todoForm.setIsReadingTodo(false),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IgnorePointer(
+                      ignoring: isReadingTodo,
+                      child: TextFormField(
+                        key: Key("descriptionField"),
+                        controller: todoForm.descriptionController,
+                        enabled: !isReadingTodo,
+                        maxLines: 4,
                       ),
                     ),
-                  )
+                  ),
+                )
               ],
             );
           }),

@@ -19,39 +19,27 @@ class TitleField extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: 8.0),
                   child: Text("Título"),
                 ),
-                if (!isReadingTodo)
-                  TextFormField(
-                    textAlign: TextAlign.center,
-                    controller: todoForm.titleController,
-                    enabled: !isReadingTodo,
-                    maxLines: 1,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Por favor, insira um título";
-                      }
-                      return null;
-                    },
-                  )
-                else
-                  GestureDetector(
-                    onTap: () => todoForm.setIsReadingTodo(false),
-                    child: Container(
-                      color: Colors.transparent,
-                      child: IgnorePointer(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: todoForm.titleController,
-                          enabled: !isReadingTodo,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return "Por favor, insira um título";
-                            }
-                            return null;
-                          },
-                        ),
+                GestureDetector(
+                  onTap: () => todoForm.setIsReadingTodo(false),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IgnorePointer(
+                      ignoring: isReadingTodo,
+                      child: TextFormField(
+                        key: Key("titleField"),
+                        textAlign: TextAlign.center,
+                        controller: todoForm.titleController,
+                        enabled: !isReadingTodo,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "Por favor, insira um título";
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                  )
+                  ),
+                ),
               ],
             );
           }),
