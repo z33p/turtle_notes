@@ -31,24 +31,19 @@ class TodoFormScreen extends StatefulWidget {
 class _TodoFormScreenState extends State<TodoFormScreen> {
   final Todo todo;
 
-  TextEditingController titleController;
-  TextEditingController descriptionController;
-  TimePeriods selectedTimePeriod;
-  TextEditingController timePeriodsController;
-  List<bool> daysToRemind;
-  bool isDoneController;
   bool isReadingTodo;
   bool isUpdatingTodo;
 
   _TodoFormScreenState({this.todo, this.isReadingTodo, this.isUpdatingTodo}) {
+    todoForm.reminderDateTimeController.text =
+        DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());
+
     if (this.todo != null) {
       todoForm.todo = this.todo;
 
-      todoForm.isDoneController.value = this.todo.isDone;
-      todoForm.isReadingTodoController.value = isReadingTodo;
+      todoForm.isReadingTodo = isReadingTodo;
+      todoForm.isUpdatingTodoController = ValueNotifier(isUpdatingTodo);
     }
-    todoForm.reminderDateTimeController.text =
-        DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());
   }
 
   @protected
