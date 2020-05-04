@@ -1,6 +1,7 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:todos_mobile/helpers/NotificationsProvider.dart';
+import 'package:todos_mobile/helpers/notifications_provider.dart';
 import 'package:todos_mobile/models/Todo.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
@@ -19,9 +20,9 @@ class TodoForm {
   ValueNotifier<bool> isDoneController = ValueNotifier<bool>(false);
   ValueNotifier<bool> _isReadingTodoController = ValueNotifier<bool>(false);
   ValueNotifier<bool> isUpdatingTodoController = ValueNotifier<bool>(false);
+  FlutterLocalNotificationsPlugin notifications;
 
   TodoForm() {
-    // this.todo = todo ?? Todo();
     this.formKey = formKey ?? GlobalKey<FormState>();
     reminderDateTimeController.text =
         DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now());
@@ -30,25 +31,23 @@ class TodoForm {
 
   set todo(Todo todo) {
     this._todo = todo;
-    todoForm.titleController.text = this._todo.title;
-    todoForm.descriptionController.text = this._todo.description;
-    todoForm.reminderDateTimeController.text =
-        DateFormat("dd-MM-yyyy HH:mm").format(this._todo.reminderDateTime);
-    todoForm.daysToRemindController.setAll(
-        0, this._todo.daysToRemind.map((bool day) => ValueNotifier<bool>(day)));
+    this.titleController.text = _todo.title;
+    this.descriptionController.text = _todo.description;
+    this.reminderDateTimeController.text =
+        DateFormat("dd-MM-yyyy HH:mm").format(_todo.reminderDateTime);
+    this.daysToRemindController.setAll(
+        0, _todo.daysToRemind.map((bool day) => ValueNotifier<bool>(day)));
+    this.selectedTimePeriod = ValueNotifier(_todo.timePeriods);
   }
 
   ValueNotifier<bool> get isReadingTodoController => _isReadingTodoController;
 
   set isReadingTodo(bool isReadingTodo) {
     _isReadingTodoController.value = isReadingTodo;
-    isUpdatingTodoController.value = !isUpdatingTodoController.value;
+    isUpdatingTodoController.value = !isReadingTodo;
   }
 
-  void setDaysToRemind({
-    int index,
-    bool value,
-  }) {
+  void setDaysToRemind({int index, bool value}) {
     switch (todoForm.selectedTimePeriod.value) {
       case TimePeriods.DAILY:
         if (todoForm.daysToRemindController
@@ -156,34 +155,32 @@ class TodoForm {
     var todoFromFields = extractTodoFromFields();
 
     if (isUpdatingTodoController.value) {
-      todoFromFields.id = this._todo.id;
-      todoFromFields.createdAt = this._todo.createdAt;
+      todoFromFields.id = _todo.id;
+      todoFromFields.createdAt = _todo.createdAt;
       store.dispatch(updateTodoAction(todoFromFields));
-      await setNotification(todoFromFields);
+      setNotification(todoFromFields);
     } else {
       Todo todoCreated = await TodosProvider.db.insert(todoFromFields);
 
-      await setNotification(todoCreated);
-
       store.dispatch(createTodoAction(todoCreated));
+      setNotification(todoCreated);
     }
   }
 
-  Future<void> setNotification(Todo todo) async {
+  void setNotification(Todo todo) {
     if (todo.reminderDateTime.difference(DateTime.now()).isNegative) return;
 
-    if (isUpdatingTodoController.value)
-      await NotificationsProvider.cancelNotification(todo.id);
+    if (isUpdatingTodoController.value) cancelNotification(todo.id);
 
     switch (todo.timePeriods) {
       case TimePeriods.NEVER:
-        return await NotificationsProvider.scheduleNotification(todo);
+        return scheduleNotification(todo);
 
       case TimePeriods.DAILY:
-        return await NotificationsProvider.scheduleNotificationDaily(todo);
+        return scheduleNotificationDaily(todo);
 
       case TimePeriods.WEEKLY:
-        return await NotificationsProvider.scheduleNotificationWeekly(todo);
+        return scheduleNotificationWeekly(todo);
 
       default:
         return;
