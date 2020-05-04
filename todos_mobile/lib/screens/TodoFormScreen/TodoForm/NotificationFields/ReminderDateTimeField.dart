@@ -24,7 +24,7 @@ class ReminderDateTimeField extends StatelessWidget {
               if (todoForm.selectedTimePeriod.value != TimePeriods.NEVER &&
                   todoForm.selectedTimePeriod.value != TimePeriods.MONTHLY)
                 return GestureDetector(
-                  onTap: () => todoForm.isReadingTodo = true,
+                  onTap: () => todoForm.isReadingTodo = false,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(
@@ -34,10 +34,6 @@ class ReminderDateTimeField extends StatelessWidget {
                         enabled: !isReadingTodo,
                         textAlign: TextAlign.center,
                         format: DateFormat("HH:mm"),
-                        onChanged: (value) {
-                          if (todoForm.isReadingTodoController.value)
-                            todoForm.isReadingTodo = true;
-                        },
                         onShowPicker: (context, currentValue) async {
                           final time = await showTimePicker(
                             context: context,
@@ -65,7 +61,7 @@ class ReminderDateTimeField extends StatelessWidget {
                         format: DateFormat("dd-MM-yyyy HH:mm"),
                         onChanged: (value) {
                           if (todoForm.isReadingTodoController.value)
-                            todoForm.isReadingTodo = true;
+                            todoForm.isReadingTodo = false;
                         },
                         onShowPicker: (context, currentValue) async {
                           final date = await showDatePicker(

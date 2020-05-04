@@ -45,7 +45,7 @@ class TimePeriodsField extends StatelessWidget {
                   }).toList(),
                   onChanged: (TimePeriods value) {
                     if (todoForm.isReadingTodoController.value)
-                      todoForm.isReadingTodo = true;
+                      todoForm.isReadingTodo = false;
 
                     if (value == TimePeriods.DAILY)
                       todoForm.daysToRemindController.setAll(

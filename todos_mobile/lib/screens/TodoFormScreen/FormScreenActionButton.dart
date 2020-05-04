@@ -33,7 +33,7 @@ class _FormScreenActionButtonState extends State<FormScreenActionButton> {
             child: Icon(isReadingTodo ? Icons.edit : saveOrArrowIcon),
             onPressed: () async {
               if (isReadingTodo) {
-                todoForm.isReadingTodo = true;
+                todoForm.isReadingTodo = false;
                 return;
               }
 
