@@ -168,12 +168,11 @@ class TodoForm {
   }
 
   void setNotification(Todo todo) {
-    if (todo.reminderDateTime.difference(DateTime.now()).isNegative) return;
-
     if (isUpdatingTodoController.value) cancelNotification(todo.id);
 
     switch (todo.timePeriods) {
       case TimePeriods.NEVER:
+        if (todo.reminderDateTime.difference(DateTime.now()).isNegative) return;
         return scheduleNotification(todo);
 
       case TimePeriods.DAILY:
