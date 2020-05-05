@@ -1,5 +1,6 @@
 import "package:path/path.dart";
 import "package:sqflite/sqflite.dart";
+import 'package:todos_mobile/helpers/notifications_provider.dart';
 import "package:todos_mobile/models/Todo.dart";
 
 final String tableName = "todos";
@@ -91,6 +92,7 @@ class TodosProvider {
 
   Future<int> remove(int id) async {
     final db = await database;
+    cancelNotification(id);
     return await db.delete(tableName, where: "$columnId = $id");
   }
 }
