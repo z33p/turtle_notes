@@ -12,7 +12,7 @@ AppState todosReducer(AppState state, action) {
         todos: state.todos.where((todo) => todo.id != action.id).toList());
 
   if (action is CreateTodoAction)
-    return state.copyWith(todos: [action.todo, ...state.todos]);
+    return state.copyWith(todos: [...state.todos, action.todo]);
 
   if (action is UpdateTodoAction)
     return state.copyWith(
