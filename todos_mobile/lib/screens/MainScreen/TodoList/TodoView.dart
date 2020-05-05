@@ -4,22 +4,22 @@ import 'package:intl/intl.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/TodosProvider.dart';
 import 'package:todos_mobile/models/Todo.dart';
-import 'package:todos_mobile/screens/MainScreen/TodoListItens/DaysToRemindView.dart';
-import 'package:todos_mobile/screens/MainScreen/TodoListItens/TodoListTrailing.dart';
 import 'package:todos_mobile/screens/TodoFormScreen/TodoFormScreen.dart';
 
 import '../../../store.dart';
+import 'DaysToRemindView.dart';
+import 'TodoListTrailing.dart';
 
-class TodoList extends StatefulWidget {
+class TodoView extends StatefulWidget {
   final Todo todo;
 
-  TodoList(this.todo);
+  TodoView(this.todo);
 
   @override
-  _TodoListState createState() => _TodoListState();
+  _TodoViewState createState() => _TodoViewState();
 }
 
-class _TodoListState extends State<TodoList> {
+class _TodoViewState extends State<TodoView> {
   bool isBeingRemoved = false;
   bool removed = false;
   bool debug = false;
@@ -102,7 +102,7 @@ class _TodoListState extends State<TodoList> {
                       ? widget.todo.title
                       : widget.todo.title.substring(0, 20) + "...",
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       decoration: widget.todo.isDone
                           ? TextDecoration.lineThrough
                           : TextDecoration.none),
@@ -142,7 +142,7 @@ class _TodoListState extends State<TodoList> {
                                   .format(widget.todo.updatedAt),
                           style: TextStyle(fontSize: 11.0)),
                     ],
-                  )
+                  ),
           ],
         ),
       ),
