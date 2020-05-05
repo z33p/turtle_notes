@@ -31,23 +31,32 @@ class DaysToRemindField extends StatelessWidget {
                           },
                           child: Container(
                             padding: EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                                color: todoForm
-                                        .daysToRemindController[day.index].value
-                                    ? Colors.teal
-                                    : Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(360)),
-                                border:
-                                    Border.all(color: Colors.blue, width: 1.0)),
+                            decoration: ShapeDecoration(
+                              color: todoForm
+                                      .daysToRemindController[day.index].value
+                                  ? Colors.teal
+                                  : Colors.white,
+                              shape: CircleBorder(),
+                              shadows: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius:
+                                      6.0, // has the effect of softening the shadow
+                                  spreadRadius:
+                                      1.0, // has the effect of extending the shadow
+                                  offset: Offset(2.0, 2.0),
+                                )
+                              ],
+                            ),
                             child: Text(
                               day.label,
                               style: TextStyle(
-                                  color: todoForm
-                                          .daysToRemindController[day.index]
-                                          .value
-                                      ? Colors.white
-                                      : Colors.black),
+                                fontSize: 12.0,
+                                color: todoForm
+                                        .daysToRemindController[day.index].value
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
                             ),
                           ),
                         ),
