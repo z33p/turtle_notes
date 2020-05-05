@@ -49,7 +49,7 @@ class ReminderDateTimeField extends StatelessWidget {
                 );
               else
                 return GestureDetector(
-                  onTap: () => todoForm.isReadingTodo = true,
+                  onTap: () => todoForm.isReadingTodo = false,
                   child: Container(
                     color: Colors.transparent,
                     child: IgnorePointer(
