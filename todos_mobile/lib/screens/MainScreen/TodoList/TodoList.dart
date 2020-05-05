@@ -29,9 +29,19 @@ class TodoList extends StatelessWidget {
             style: TextStyle(fontSize: 20.0),
           ),
         ),
-        Column(
-          children: todosNotDone.map((todo) => TodoView(todo)).toList(),
-        ),
+        if (todosNotDone.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              "Sem Tarefas",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.black38),
+            ),
+          )
+        else
+          Column(
+            children: todosNotDone.map((todo) => TodoView(todo)).toList(),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
@@ -39,9 +49,19 @@ class TodoList extends StatelessWidget {
             style: TextStyle(fontSize: 20.0),
           ),
         ),
-        Column(
-          children: todosDone.map((todo) => TodoView(todo)).toList(),
-        ),
+        if (todosDone.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              "Sem Tarefas",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.black38),
+            ),
+          )
+        else
+          Column(
+            children: todosDone.map((todo) => TodoView(todo)).toList(),
+          ),
       ]),
     );
   }
