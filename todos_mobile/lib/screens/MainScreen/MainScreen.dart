@@ -2,41 +2,27 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:todos_mobile/actions/todos_actions.dart';
 import 'package:todos_mobile/helpers/notifications_provider.dart';
 import 'package:todos_mobile/models/Todo.dart';
 
 import '../../store.dart';
 import '../TodoFormScreen/TodoFormScreen.dart';
-import 'NotificationsViewButton.dart';
+import 'NotificationsView.dart';
 import 'TodoList/TodoList.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   final String title;
   final List<Todo> todos;
   final VoidCallback getTodos;
 
   MainScreen(this.todos, {Key key, this.title, this.getTodos})
-      : super(key: key);
-
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  List<PendingNotificationRequest> notifications;
-
-  @override
-  void initState() {
-    super.initState();
-    notifications = [];
+      : super(key: key) {
     getNotifications();
   }
 
   Future<void> getNotifications() async {
-    var notificationsPending = await checkPendingNotificationRequests();
-    setState(() => notifications = notificationsPending);
+    notificationsController.value = await checkPendingNotificationRequests();
   }
 
   @override
@@ -45,10 +31,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(widget.title),
-            NotificationsViewButton(notifications)
-          ],
+          children: <Widget>[Text(title), NotificationsView(todos)],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -66,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
           getTodosAction(store);
           getNotifications();
         },
-        child: TodoList(widget.todos),
+        child: TodoList(todos),
       ),
     );
   }
