@@ -1,7 +1,7 @@
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
-import 'createTodoWithOnlyTitle.dart';
+import 'createTodo.dart';
 
 void main() {
   group("Create Todo", () {
@@ -22,5 +22,5 @@ void main() {
     });
   });
 
-  createTodoWithOnlyTitle();
+  createTodo();
 }
