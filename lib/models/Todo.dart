@@ -1,4 +1,7 @@
 import 'package:turtle_notes/helpers/TodosProvider.dart';
+import 'package:turtle_notes/models/Notification.dart';
+
+import '../helpers/TodosProvider.dart';
 
 enum TimePeriods { NEVER, CHOOSE_DAYS, DAILY, WEEKLY, MONTHLY }
 
@@ -21,6 +24,7 @@ class Todo {
   String title;
   String description;
   bool isDone;
+  List<Notification> notifications = [];
   TimePeriods timePeriods;
   DateTime reminderDateTime;
   List<bool> daysToRemind = new List(7);
@@ -33,6 +37,7 @@ class Todo {
     this.title,
     this.description = "",
     this.isDone = false,
+    this.notifications,
     this.timePeriods = TimePeriods.NEVER,
     this.reminderDateTime,
     this.daysToRemind = const [false, false, false, false, false, false, false],
@@ -40,21 +45,28 @@ class Todo {
     this.updatedAt,
   });
 
-  factory Todo.fromMap(Map<String, dynamic> map) {
+  factory Todo.fromMap(Map<String, dynamic> todoMapFromDb) {
+    todoMapFromDb.keys.forEach((key) {
+      print("$key: ${todoMapFromDb[key]}");
+    });
     return Todo(
-      id: map['id'],
-      title: map[columnTitle],
-      description: map[columnDescription],
-      isDone: map[columnIsDone] == 1,
-      timePeriods: TimePeriods.values
-          .firstWhere((value) => value.toString() == map[columnTimePeriods]),
-      reminderDateTime: DateTime.parse(map[columnReminderDateTime]),
-      daysToRemind: map[columnDaysToRemind]
+      id: todoMapFromDb[columnId],
+      title: todoMapFromDb[columnTitle],
+      description: todoMapFromDb[columnDescription],
+      isDone: todoMapFromDb[columnIsDone] == 1,
+      notifications: todoMapFromDb[tableNotifications]
+          .map<Notification>(
+              (notification) => Notification.fromMap(notification))
+          .toList(),
+      timePeriods: TimePeriods.values.firstWhere(
+          (value) => value.toString() == todoMapFromDb[columnTimePeriods]),
+      reminderDateTime: DateTime.parse(todoMapFromDb[columnReminderDateTime]),
+      daysToRemind: todoMapFromDb[columnDaysToRemind]
           .split(",")
           .map<bool>((bit) => bit == "1")
           .toList(),
-      createdAt: DateTime.parse(map[columnCreatedAt]),
-      updatedAt: DateTime.parse(map[columnUpdatedAt]),
+      createdAt: DateTime.parse(todoMapFromDb[columnCreatedAt]),
+      updatedAt: DateTime.parse(todoMapFromDb[columnUpdatedAt]),
     );
   }
 
