@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:turtle_notes/actions/todos_actions.dart';
-import 'package:turtle_notes/helpers/notifications_provider.dart';
 import 'package:turtle_notes/models/Todo.dart';
 
 import '../../store.dart';
@@ -17,13 +16,7 @@ class MainScreen extends StatelessWidget {
   final VoidCallback getTodos;
 
   MainScreen(this.todos, {Key key, this.title, this.getTodos})
-      : super(key: key) {
-    getNotifications();
-  }
-
-  Future<void> getNotifications() async {
-    notificationsController.value = await checkPendingNotificationRequests();
-  }
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +40,6 @@ class MainScreen extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           getTodosAction(store);
-          getNotifications();
         },
         child: TodoList(todos),
       ),

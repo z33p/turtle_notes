@@ -5,13 +5,19 @@ import 'package:turtle_notes/helpers/TodosProvider.dart';
 import 'package:turtle_notes/models/Todo.dart';
 import 'package:turtle_notes/store.dart';
 
+import '../helpers/notifications_provider.dart';
+import '../models/Todo.dart';
+
 void getTodosAction(Store store) async {
   store.dispatch(GetTodosAction(await TodosProvider.db.findAll()));
 }
 
 ThunkAction<AppState> createTodoAction(Todo todo) {
   return (Store<AppState> store) async {
-    store.dispatch(CreateTodoAction(todo));
+    Todo todoCreated = await TodosProvider.db.insert(todo);
+    todoCreated.notifications = await setNotifications(todoCreated);
+
+    store.dispatch(CreateTodoAction(todoCreated));
   };
 }
 
@@ -19,6 +25,8 @@ ThunkAction<AppState> updateTodoAction(Todo todo) {
   return (Store<AppState> store) async {
     todo.updatedAt = DateTime.now();
     await TodosProvider.db.update(todo);
+    todo.notifications = await setNotifications(todo, todoUpdated: true);
+
     store.dispatch(UpdateTodoAction(todo));
   };
 }
@@ -38,9 +46,9 @@ ThunkAction<AppState> patchTodoAction(Map<String, dynamic> todo) {
   };
 }
 
-ThunkAction<AppState> deleteTodoAction(int id) {
+ThunkAction<AppState> deleteTodoAction(Todo todo) {
   return (Store<AppState> store) async {
-    await TodosProvider.db.remove(id);
-    store.dispatch(DeleteTodoAction(id));
+    await TodosProvider.db.remove(todo);
+    store.dispatch(DeleteTodoAction(todo.id));
   };
 }

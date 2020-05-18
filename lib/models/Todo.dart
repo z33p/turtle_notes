@@ -24,7 +24,7 @@ class Todo {
   String title;
   String description;
   bool isDone;
-  List<Notification> notifications = [];
+  List<Notification> notifications;
   TimePeriods timePeriods;
   DateTime reminderDateTime;
   List<bool> daysToRemind = new List(7);
@@ -34,7 +34,7 @@ class Todo {
 
   Todo({
     this.id,
-    this.title,
+    this.title = "",
     this.description = "",
     this.isDone = false,
     this.notifications,
@@ -43,7 +43,9 @@ class Todo {
     this.daysToRemind = const [false, false, false, false, false, false, false],
     this.createdAt,
     this.updatedAt,
-  });
+  }) {
+    this.notifications ??= [];
+  }
 
   factory Todo.fromMap(Map<String, dynamic> todoMapFromDb) {
     todoMapFromDb.keys.forEach((key) {

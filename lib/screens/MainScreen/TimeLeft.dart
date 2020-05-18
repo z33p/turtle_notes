@@ -33,11 +33,24 @@ class TimeLeft extends StatefulWidget {
   }
 
   String getTimeLeftForChooseDays() {
-    return "CHOOSE_DAYS";
+    int weekday = DateTime.now().weekday;
+    var nextDayToRemind = -1;
+
+    var i = weekday + 1;
+    while (i != weekday) {
+      if (todo.daysToRemind[i]) {
+        nextDayToRemind = i;
+        break;
+      }
+
+      if (i++ == todo.daysToRemind.length - 1) i = 0;
+    }
+
+    return getTimeLeftForWeekly(todoWeekDay: nextDayToRemind);
   }
 
-  String getTimeLeftForWeekly() {
-    int todoWeekDay =
+  String getTimeLeftForWeekly({int todoWeekDay}) {
+    todoWeekDay ??=
         todo.daysToRemind.indexWhere((bool isDayToRemind) => isDayToRemind);
 
     int weekDayDifference = todoWeekDay - DateTime.now().weekday;

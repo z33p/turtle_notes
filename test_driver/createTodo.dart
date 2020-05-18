@@ -29,7 +29,7 @@ createTodo() {
       await driver.tap(floatButton);
       expect(await driver.getText(appBarTitle), "Criar Tarefa");
 
-      var textTitleField = "Basic Todo with only title";
+      var textTitleField = "Repeat Reminder Never";
       var textDescriptionField = "Just a little description about this todo";
 
       await driver.tap(titleField);
@@ -40,18 +40,15 @@ createTodo() {
 
       await driver.tap(isDoneField);
 
+      var now = DateTime.now().add(Duration(days: 1));
+
       await driver.tap(reminderDateTimeField);
       // Select day 1
-      await driver.tap(find.text("1"));
+      await driver.tap(find.text("${now.day}"));
       await driver.tap(find.text("OK"));
 
-      // Select 6 AM
-      await driver.tap(find.text("6"));
-
-      // Switch for minutes
-      await driver.tap(find.text("00"));
-      // Select 30 minutes
-      await driver.tap(find.text("30"));
+      // Select 6 AM or PM
+      // await driver.tap(find.text("6"));
       await driver.tap(find.text("OK"));
 
       await driver.tap(floatButton);

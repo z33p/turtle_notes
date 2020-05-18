@@ -1,20 +1,111 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:turtle_notes/models/Notification.dart';
 import 'package:turtle_notes/models/Todo.dart';
 import 'package:turtle_notes/screens/TodoFormScreen/TodoForm/TodoForm.dart';
 
-ValueNotifier<List<PendingNotificationRequest>> notificationsController =
-    ValueNotifier(List());
+import '../models/Todo.dart';
+import 'TodosProvider.dart';
 
-void addNotificationController(Todo todo) {
-  notificationsController.value.add(
-    PendingNotificationRequest(
-      todo.id,
-      todo.title,
-      "",
-      todo.id.toString(),
-    ),
-  );
+Future<List<Notification>> setNotifications(Todo todo,
+    {bool todoUpdated = false}) async {
+  if (todo.timePeriods == TimePeriods.CHOOSE_DAYS) {
+    if (todoUpdated) {
+      cancelEachNotification(todo.notifications);
+
+      int amountOfPendingNotifications = 0;
+
+      await Future.forEach(todo.daysToRemind.asMap().keys, (index) async {
+        {
+          if (todo.daysToRemind[index]) {
+            if (todo.notifications.length > amountOfPendingNotifications) {
+              scheduleNotificationWeekly(
+                  todo.notifications[amountOfPendingNotifications].id,
+                  index,
+                  todo);
+              amountOfPendingNotifications++;
+            } else {
+              var notification = await TodosProvider.db
+                  .insertNotification(todo.id, Notification());
+              todo.notifications.add(notification);
+              scheduleNotificationWeekly(notification.id, index, todo);
+              amountOfPendingNotifications++;
+            }
+          }
+
+          for (var i = todo.notifications.length - 1;
+              todo.notifications.length > amountOfPendingNotifications;
+              i--) {
+            TodosProvider.db.removeNotification(todo.notifications[i].id);
+            todo.notifications.removeLast();
+          }
+        }
+      });
+
+      if (todo.notifications.length > amountOfPendingNotifications)
+        todo.notifications.removeLast();
+    } else {
+      await Future.forEach(todo.daysToRemind.asMap().keys, (index) async {
+        if (todo.daysToRemind[index]) {
+          var notification = await TodosProvider.db
+              .insertNotification(todo.id, Notification());
+          todo.notifications.add(notification);
+          scheduleNotificationWeekly(notification.id, index, todo);
+        }
+      });
+    }
+
+    return todo.notifications;
+  }
+
+  if (todoUpdated) {
+    cancelEachNotification(todo.notifications);
+
+    for (var i = todo.notifications.length - 1; i > 0; i--) {
+      TodosProvider.db.removeNotification(todo.notifications[i].id);
+      todo.notifications.removeLast();
+    }
+
+    switch (todo.timePeriods) {
+      case TimePeriods.DAILY:
+        scheduleNotificationDaily(todo.notifications[0].id, todo);
+        return todo.notifications;
+
+      case TimePeriods.WEEKLY:
+        scheduleNotification(todo.notifications[0].id, todo);
+        return todo.notifications;
+
+      default:
+        // Case TimePeriods.Never
+        scheduleNotification(todo.notifications[0].id, todo);
+        return todo.notifications;
+    }
+  }
+
+  switch (todo.timePeriods) {
+    case TimePeriods.DAILY:
+      var notification =
+          await TodosProvider.db.insertNotification(todo.id, Notification());
+      scheduleNotificationDaily(notification.id, todo);
+
+      return [notification];
+
+    case TimePeriods.WEEKLY:
+      var notification =
+          await TodosProvider.db.insertNotification(todo.id, Notification());
+      scheduleNotificationWeekly(
+          notification.id, todo.daysToRemind.indexWhere((day) => day), todo);
+
+      return [notification];
+
+    default:
+      // Case TimePeriods.Never
+      var notification =
+          await TodosProvider.db.insertNotification(todo.id, Notification());
+
+      scheduleNotification(notification.id, todo);
+
+      return [notification];
+  }
 }
 
 Future<List<PendingNotificationRequest>>
@@ -25,17 +116,20 @@ Future<List<PendingNotificationRequest>>
 }
 
 void cancelNotification(int id) async {
-  notificationsController.value
-      .removeWhere((notification) => notification.id == id);
   await todoForm.notifications.cancel(id);
 }
 
+void cancelEachNotification(List<Notification> notifications) {
+  notifications.forEach((notification) {
+    cancelNotification(notification.id);
+  });
+}
+
 void cancelAllNotifications() async {
-  notificationsController.value.clear();
   await todoForm.notifications.cancelAll();
 }
 
-void scheduleNotification(Todo todo) async {
+void scheduleNotification(int notificationID, Todo todo) async {
   var scheduledNotificationDateTime = todo.reminderDateTime;
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       "your other channel id",
@@ -45,17 +139,16 @@ void scheduleNotification(Todo todo) async {
   NotificationDetails platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await todoForm.notifications.schedule(
-    todo.id,
+    notificationID,
     todo.title,
     "",
     scheduledNotificationDateTime,
     platformChannelSpecifics,
     payload: todo.id.toString(),
   );
-  addNotificationController(todo);
 }
 
-void scheduleNotificationDaily(Todo todo) async {
+void scheduleNotificationDaily(int notificationID, Todo todo) async {
   var time = Time(todo.reminderDateTime.hour, todo.reminderDateTime.minute,
       todo.reminderDateTime.second);
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -66,17 +159,17 @@ void scheduleNotificationDaily(Todo todo) async {
   var platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await todoForm.notifications.showDailyAtTime(
-    todo.id,
+    notificationID,
     todo.title,
     "",
     time,
     platformChannelSpecifics,
     payload: todo.id.toString(),
   );
-  addNotificationController(todo);
 }
 
-void scheduleNotificationWeekly(Todo todo) async {
+void scheduleNotificationWeekly(
+    int notificationID, int dayToRemindIndex, Todo todo) async {
   var time = Time(todo.reminderDateTime.hour, todo.reminderDateTime.minute,
       todo.reminderDateTime.second);
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -87,25 +180,24 @@ void scheduleNotificationWeekly(Todo todo) async {
   var platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await todoForm.notifications.showWeeklyAtDayAndTime(
-    todo.id,
+    notificationID,
     todo.title,
     "",
-    Day.values[todo.daysToRemind.indexWhere((day) => day)],
+    Day.values[dayToRemindIndex],
     time,
     platformChannelSpecifics,
     payload: todo.id.toString(),
   );
-  addNotificationController(todo);
 }
 
-void showNotification() async {
+void showNotification(int notificationID) async {
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       "your channel id", "your channel name", "your channel description",
       importance: Importance.Max, priority: Priority.High, ticker: "ticker");
   var iOSPlatformChannelSpecifics = IOSNotificationDetails();
   var platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await todoForm.notifications.show(0, "Hello this is the title",
+  await todoForm.notifications.show(notificationID, "Hello this is the title",
       "From Work Manager", platformChannelSpecifics,
       payload: "item x");
 }

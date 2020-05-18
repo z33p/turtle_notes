@@ -1,10 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:turtle_notes/helpers/notifications_provider.dart';
 import 'package:turtle_notes/models/Todo.dart';
 import 'package:turtle_notes/actions/todos_actions.dart';
-import 'package:turtle_notes/helpers/TodosProvider.dart';
 import 'package:turtle_notes/store.dart';
 
 class TodoForm {
@@ -33,6 +31,7 @@ class TodoForm {
     this._todo = todo;
     this.titleController.text = _todo.title;
     this.descriptionController.text = _todo.description;
+    this.isDoneController.value = _todo.isDone;
     this.reminderDateTimeController.text =
         DateFormat("dd-MM-yyyy HH:mm").format(_todo.reminderDateTime);
     this.daysToRemindController.setAll(
@@ -84,8 +83,7 @@ class TodoForm {
      * to represent [DateFormat("dd-MM-yyyy HH:mm")] for [TimePeriods.NEVER]
      * And to represent only time [DateFormat("HH:mm")] to others
      */
-    if (valueController.value != TimePeriods.NEVER &&
-        valueController.value != TimePeriods.MONTHLY) {
+    if (valueController.value != TimePeriods.NEVER) {
       if (this.reminderDateTimeController.text.length != 5) {
         this.reminderDateTimeController.text = DateFormat("HH:mm").format(
             DateFormat("dd-MM-yyyy HH:mm")
@@ -157,33 +155,11 @@ class TodoForm {
     if (isUpdatingTodoController.value) {
       todoFromFields.id = _todo.id;
       todoFromFields.createdAt = _todo.createdAt;
+      todoFromFields.notifications = _todo.notifications;
+
       store.dispatch(updateTodoAction(todoFromFields));
-      setNotification(todoFromFields);
-    } else {
-      Todo todoCreated = await TodosProvider.db.insert(todoFromFields);
-
-      store.dispatch(createTodoAction(todoCreated));
-      setNotification(todoCreated);
-    }
-  }
-
-  void setNotification(Todo todo) {
-    if (isUpdatingTodoController.value) cancelNotification(todo.id);
-
-    switch (todo.timePeriods) {
-      case TimePeriods.NEVER:
-        if (todo.reminderDateTime.difference(DateTime.now()).isNegative) return;
-        return scheduleNotification(todo);
-
-      case TimePeriods.DAILY:
-        return scheduleNotificationDaily(todo);
-
-      case TimePeriods.WEEKLY:
-        return scheduleNotificationWeekly(todo);
-
-      default:
-        return;
-    }
+    } else
+      store.dispatch(createTodoAction(todoFromFields));
   }
 }
 

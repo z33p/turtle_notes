@@ -38,7 +38,7 @@ class TodoListTrailling extends StatelessWidget {
                       FlatButton(
                         child: Text("Sim"),
                         onPressed: () async {
-                          store.dispatch(deleteTodoAction(todo.id));
+                          store.dispatch(deleteTodoAction(todo));
                           Navigator.pop(_);
                         },
                       )

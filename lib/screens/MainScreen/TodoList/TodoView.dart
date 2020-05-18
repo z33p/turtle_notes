@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:turtle_notes/actions/todos_actions.dart';
 import 'package:turtle_notes/helpers/TodosProvider.dart';
+import 'package:turtle_notes/helpers/notifications_provider.dart';
 import 'package:turtle_notes/models/Todo.dart';
 import 'package:turtle_notes/screens/TodoFormScreen/TodoFormScreen.dart';
 
@@ -23,6 +25,16 @@ class _TodoViewState extends State<TodoView> {
   bool isBeingRemoved = false;
   bool removed = false;
   bool debug = false;
+  // List<PendingNotificationRequest> _notifications = [];
+
+  // Future<void> getPendingNotifications() async {
+  //   // cancelAllNotifications();
+  //   var notifications = await checkPendingNotificationRequests();
+  //   print(notifications.length);
+  //   setState(() {
+  //     _notifications = notifications;
+  //   });
+  // }
 
   void setRemoved(bool value) {
     setState(() {
@@ -44,7 +56,7 @@ class _TodoViewState extends State<TodoView> {
       isBeingRemoved = false;
       removed = false;
     });
-    store.dispatch(deleteTodoAction(widget.todo.id));
+    store.dispatch(deleteTodoAction(widget.todo));
   }
 
   void showSnackBar(context) {
@@ -97,7 +109,12 @@ class _TodoViewState extends State<TodoView> {
                   onChanged: (value) => store.dispatch(patchTodoAction(
                       {columnId: widget.todo.id, columnIsDone: value ? 1 : 0})),
                 ),
+                //     RaisedButton(
+                //   onPressed: getPendingNotifications,
+                //   child: Text("${_notifications.length}"),
+                // ),
                 title: Text(
+                  // "${widget.todo.notifications.length}  ${widget.todo.title}",
                   widget.todo.title.length < 20
                       ? widget.todo.title
                       : widget.todo.title.substring(0, 20) + "...",
