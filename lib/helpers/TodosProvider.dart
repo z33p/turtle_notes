@@ -109,7 +109,6 @@ class TodosProvider {
     todo.createdAt = DateTime.now();
     todo.updatedAt = DateTime.now();
     todo.id = await db.insert(tableTodos, todo.toMap());
-    db.insert(tableNotifications, {columnTodoId: todo.id});
     return todo;
   }
 
