@@ -25,7 +25,7 @@ ThunkAction<AppState> updateTodoAction(Todo todo) {
   return (Store<AppState> store) async {
     todo.updatedAt = DateTime.now();
     await TodosProvider.db.update(todo);
-    todo.notifications = await setNotifications(todo, todoUpdated: true);
+    todo.notifications = await setNotifications(todo, todoExists: true);
 
     store.dispatch(UpdateTodoAction(todo));
   };

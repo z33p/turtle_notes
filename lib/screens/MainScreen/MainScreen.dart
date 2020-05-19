@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:turtle_notes/actions/todos_actions.dart';
 import 'package:turtle_notes/models/Todo.dart';
+import 'package:turtle_notes/screens/MainScreen/NotificationsList/NotificationsList.dart';
 
 import '../../store.dart';
 import '../TodoFormScreen/TodoFormScreen.dart';
-import 'NotificationsView.dart';
 import 'TodoList/TodoList.dart';
 
 class MainScreen extends StatelessWidget {
@@ -24,7 +24,7 @@ class MainScreen extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[Text(title), NotificationsView(todos)],
+          children: <Widget>[Text(title), NotificationsList(todos)],
         ),
       ),
       floatingActionButton: FloatingActionButton(

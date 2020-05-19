@@ -6,7 +6,9 @@ import 'package:turtle_notes/models/Todo.dart';
 class TimeLeft extends StatefulWidget {
   final Todo todo;
 
-  TimeLeft(this.todo);
+  TimeLeft(
+    this.todo,
+  );
 
   DateTime getTimeDifference(DateTime dateTime) {
     var now = DateTime.now();

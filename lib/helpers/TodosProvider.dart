@@ -3,6 +3,7 @@ import "package:sqflite/sqflite.dart";
 import 'package:turtle_notes/helpers/notifications_provider.dart';
 import 'package:turtle_notes/models/Notification.dart';
 import "package:turtle_notes/models/Todo.dart";
+import 'package:turtle_notes/screens/TodoFormScreen/TodoForm/TodoForm.dart';
 
 import 'notifications_provider.dart';
 
@@ -127,9 +128,7 @@ class TodosProvider {
 
   Future<int> remove(Todo todo) async {
     final db = await database;
-    todo.notifications.forEach((notification) {
-      cancelNotification(notification.id);
-    });
+    cancelEachNotification(todo.notifications);
     return await db.delete(tableTodos, where: "$columnId = ${todo.id}");
   }
 
@@ -144,7 +143,7 @@ class TodosProvider {
 
   Future<int> removeNotification(int id) async {
     final db = await database;
-    cancelNotification(id);
+    todoForm.notifications.cancel(id);
     return await db.delete(tableNotifications, where: "$columnId = $id");
   }
 }

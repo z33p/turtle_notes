@@ -48,9 +48,6 @@ class Todo {
   }
 
   factory Todo.fromMap(Map<String, dynamic> todoMapFromDb) {
-    todoMapFromDb.keys.forEach((key) {
-      print("$key: ${todoMapFromDb[key]}");
-    });
     return Todo(
       id: todoMapFromDb[columnId],
       title: todoMapFromDb[columnTitle],

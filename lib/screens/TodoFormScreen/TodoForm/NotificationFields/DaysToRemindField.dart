@@ -6,7 +6,7 @@ class DaysToRemindField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18.0),
+      padding: const EdgeInsets.only(top: 18.0, bottom: 28),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: WeekDays.values
@@ -41,17 +41,17 @@ class DaysToRemindField extends StatelessWidget {
                                 BoxShadow(
                                   color: Colors.grey,
                                   blurRadius:
-                                      6.0, // has the effect of softening the shadow
+                                      4.0, // has the effect of softening the shadow
                                   spreadRadius:
-                                      1.0, // has the effect of extending the shadow
-                                  offset: Offset(2.0, 2.0),
+                                      0.5, // has the effect of extending the shadow
+                                  offset: Offset(1.0, 1.0),
                                 )
                               ],
                             ),
                             child: Text(
                               day.label,
                               style: TextStyle(
-                                fontSize: 8.0,
+                                fontSize: 12.0,
                                 color: todoForm
                                         .daysToRemindController[day.index].value
                                     ? Colors.white

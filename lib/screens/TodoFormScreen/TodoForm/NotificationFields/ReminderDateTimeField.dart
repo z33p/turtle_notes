@@ -25,6 +25,7 @@ class ReminderDateTimeField extends StatelessWidget {
           child: Text("Horário"),
         ),
         ValueListenableBuilder<bool>(
+            key: Key("reminderDateTimeField"),
             valueListenable: todoForm.isReadingTodoController,
             builder: (BuildContext context, bool isReadingTodo, _) {
               return GestureDetector(

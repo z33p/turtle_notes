@@ -17,10 +17,10 @@ class IsDoneField extends StatelessWidget {
                   return Checkbox(
                     key: Key("isDoneField"),
                     value: value,
-                    onChanged: (bool value) {
+                    onChanged: (bool isChecked) {
                       if (isReadingTodo) todoForm.isReadingTodo = false;
 
-                      todoForm.isDoneController.value = value;
+                      todoForm.isDoneController.value = isChecked;
                     },
                   );
                 }),
