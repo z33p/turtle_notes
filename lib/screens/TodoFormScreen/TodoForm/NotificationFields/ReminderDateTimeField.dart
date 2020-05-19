@@ -38,8 +38,7 @@ class ReminderDateTimeField extends StatelessWidget {
                       valueListenable: todoForm.selectedTimePeriod,
                       builder: (BuildContext context,
                           TimePeriods selectedTimePeriod, _) {
-                        if (selectedTimePeriod != TimePeriods.NEVER &&
-                            selectedTimePeriod != TimePeriods.MONTHLY)
+                        if (selectedTimePeriod != TimePeriods.NEVER)
                           return DateTimeField(
                             controller: todoForm.reminderDateTimeController,
                             enabled: !isReadingTodo,

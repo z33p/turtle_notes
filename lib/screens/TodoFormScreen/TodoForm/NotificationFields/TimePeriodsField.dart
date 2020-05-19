@@ -77,8 +77,7 @@ class TimePeriodsField extends StatelessWidget {
                     },
                   ),
                 ),
-                if (selectedTimePeriod == TimePeriods.NEVER ||
-                    selectedTimePeriod == TimePeriods.MONTHLY)
+                if (selectedTimePeriod == TimePeriods.NEVER)
                   Container()
                 else
                   DaysToRemindField(),

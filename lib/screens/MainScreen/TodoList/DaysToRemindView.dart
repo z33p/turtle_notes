@@ -25,15 +25,6 @@ class DaysToRemindView extends StatelessWidget {
           ),
         );
 
-      case TimePeriods.MONTHLY:
-        return Container(
-          padding: EdgeInsets.only(top: 2.0),
-          alignment: Alignment.centerRight,
-          child: Text(
-            "${TimePeriods.MONTHLY.label} dia ${todo.reminderDateTime.day}",
-          ),
-        );
-
       default:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

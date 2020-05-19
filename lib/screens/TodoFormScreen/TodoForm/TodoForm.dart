@@ -128,8 +128,7 @@ class TodoForm {
 
     DateTime reminderDateTime;
 
-    if (_selectedTimePeriodController.value == TimePeriods.NEVER ||
-        _selectedTimePeriodController.value == TimePeriods.MONTHLY)
+    if (_selectedTimePeriodController.value == TimePeriods.NEVER)
       reminderDateTime =
           DateFormat("dd-MM-yyyy HH:mm").parse(reminderDateTimeController.text);
     else

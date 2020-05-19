@@ -3,14 +3,13 @@ import 'package:turtle_notes/models/Notification.dart';
 
 import '../helpers/TodosProvider.dart';
 
-enum TimePeriods { NEVER, CHOOSE_DAYS, DAILY, WEEKLY, MONTHLY }
+enum TimePeriods { NEVER, CHOOSE_DAYS, DAILY, WEEKLY }
 
 List<String> timesPeriodsLabels = [
   "Nunca",
   "Escolher dias",
   "Diariamente",
   "Semanalmente",
-  "Mensalmente",
 ];
 
 extension TimesPeriodsExtension on TimePeriods {
